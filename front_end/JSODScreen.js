@@ -285,37 +285,9 @@ WebInspector.JSODTab = function(name, value) {
 
             var g = svg.group(gr, 'g', {fontFamily: 'Courier', fontSize: '12'});
 
-            function callback(properties, internalProperties)
-            {
-
-                if (!properties)
-                    return;
-
+            function doDrawJavascriptObject(value, properties, internalProperties, hasConstructorAsOwnProperty, __proto__Object, constructorObject) {
                 var x = ox;
                 var y = oy;
-
-                var hasConstructorAsOwnProperty = false;
-                var constructorObject;
-                var __proto__Object;
-                for(var ci = 0; ci < properties.length; ci++) {
-                    if ('constructor' === properties[ci].name) {
-                        constructorObject = properties[ci].value;
-                        hasConstructorAsOwnProperty = true;
-                    } else if ('__proto__' === properties[ci].name && properties[ci].value) {
-                        __proto__Object = properties[ci].value;
-                    }
-                }
-
-                if ((!constructorObject) && __proto__Object) {
-                    function getConstructorObject(properties, internalProperties) {
-                        for(var ci = 0; ci < properties.length; ci++) {
-                            if ('constructor' === properties[ci].name) {
-                                constructorObject = properties[ci].value;
-                            }
-                        }
-                    }
-                    WebInspector.RemoteObject.loadFromObjectPerProto(__proto__Object, getConstructorObject.bind(this));
-                }
                 // Normal object i.e. not a prototype like
                 // i.e. does not have constructor as it's own property
                 if (!hasConstructorAsOwnProperty) {
@@ -626,6 +598,41 @@ WebInspector.JSODTab = function(name, value) {
                         svg.text(g, x+6, y+15, '-', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
                     } else if (type === 'N') {
                     }
+                }
+            }
+
+            function callback(properties, internalProperties)
+            {
+
+                if (!properties)
+                    return;
+
+                var hasConstructorAsOwnProperty = false;
+                var constructorObject;
+                var __proto__Object;
+                for(var ci = 0; ci < properties.length; ci++) {
+                    if ('constructor' === properties[ci].name) {
+                        constructorObject = properties[ci].value;
+                        hasConstructorAsOwnProperty = true;
+                    } else if ('__proto__' === properties[ci].name && properties[ci].value) {
+                        __proto__Object = properties[ci].value;
+                    }
+                }
+
+
+                if ((!constructorObject) && __proto__Object) {
+                    function getConstructorObject(properties, internalProperties) {
+                        for(var ci = 0; ci < properties.length; ci++) {
+                            if ('constructor' === properties[ci].name) {
+                                constructorObject = properties[ci].value;
+                                break;
+                            }
+                        }
+                        doDrawJavascriptObject(value, properties, internalProperties, hasConstructorAsOwnProperty, __proto__Object, constructorObject);
+                    }
+                    WebInspector.RemoteObject.loadFromObjectPerProto(__proto__Object, getConstructorObject.bind(this));
+                } else {
+                    doDrawJavascriptObject(value, properties, internalProperties, hasConstructorAsOwnProperty,  __proto__Object, constructorObject);
                 }
             }
 
