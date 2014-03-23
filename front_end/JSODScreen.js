@@ -282,6 +282,9 @@ WebInspector.JSODTab = function(name, value) {
         }
 
         function drawJavascriptObject(svg, gr, label, value, ox, oy, boxWidth, boxHeight) {
+            function functionName(functionString) {
+                return /^function\s*([_$a-zA-Z\xA0-\uFFFF][_$a-zA-Z0-9\xA0-\uFFFF]*)\s*/.exec('' + functionString)[1] || functionString.substring(9, 39);
+            }
 
             var g = svg.group(gr, 'g', {fontFamily: 'Courier', fontSize: '12'});
 
@@ -376,7 +379,7 @@ WebInspector.JSODTab = function(name, value) {
                         svg.text(g, x+20, y+16, label + ' : ' + value.description, {fill: 'black'});
                     } else if (value.type === "function") {
                         svg.text(g, x+5, y+16, 'fx', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
-                        svg.text(g, x+20, y+16, label + ' : ' + value.description + '()', {fill: 'black'});
+                        svg.text(g, x+20, y+16, label + ' : ' + functionName(value.description) + '()', {fill: 'black'});
                     } else {
                         svg.text(g, x+7, y+16, 'o', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
                         svg.text(g, x+20, y+16, label + ' : ' + value.description, {fill: 'black'});
@@ -414,7 +417,15 @@ WebInspector.JSODTab = function(name, value) {
                 }
                 svg.rect(g, x, y, boxWidth, boxHeight,  {fill: 'white', stroke: 'gray', strokeWidth: '1'});
                 svg.text(g, x+6, y+15, 'o', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
-                svg.text(g, x+20, y+16, '{} : ', {fill: 'black'});
+                if (hasConstructorAsOwnProperty) {
+                    svg.text(g, x+20, y+16, label + ' : ' + value.description, {fill: 'black'});
+                } else {
+                    if (value.type === 'function') {
+                        svg.text(g, x+20, y+16, '{} : ' + functionName(value.description), {fill: 'black'});
+                    } else {
+                        svg.text(g, x+20, y+16, '{} : ' + value.description, {fill: 'black'});
+                    }
+                }
                 var c2pr = svg.line(g, x+(boxWidth+(boxWidth/4)), y+12, x+boxWidth, y+12, {stroke: 'black', markerEnd: 'url(#arrow)'});
                 svg.title(c2pr, 'Reference to prototype object from Constructor function.');
 
