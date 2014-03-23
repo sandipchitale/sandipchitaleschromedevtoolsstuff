@@ -285,7 +285,83 @@ WebInspector.JSODTab = function(name, value) {
 
             var g = svg.group(gr, 'g', {fontFamily: 'Courier', fontSize: '12'});
 
-            function doDrawJavascriptObject(value, properties, internalProperties, hasConstructorAsOwnProperty, __proto__Object, constructorObject) {
+            function doDrawJavascriptObjectProperties(x, y, properties, internalProperties) {
+                var props = [];
+                var tooltip;
+
+                for(var prop = 0; prop < properties.length; prop++) {
+                    var propName = properties[prop].name;
+                    var propValue = properties[prop].value;
+                    // Skip __proto__ as we already rendered it above
+                    if ('__proto__' == propName) {
+                        continue;
+                    }
+
+                    if (propValue) {
+                        if (propValue.type === 'function') {
+                            continue;
+                        } else if (propValue.type === 'object') {
+                            props.push(propName + 'O');
+                        } else if (propValue.type === 'number') {
+                            props.push(propName + ' : ' + propValue.value + '#');
+                        } else if (propValue.type === 'string') {
+                            props.push(propName + ' : \'' + propValue.value.substring(0,36) + '\'S');
+                        } else {
+                            props.push(propName + ' : ' + propValue.value + (propValue.type === 'boolean' ? 'B' : '-'));
+                        }
+                    }
+                }
+                props.sort();
+
+                var funcs = [];
+                for(var prop = 0; prop < properties.length; prop++) {
+                    var propName = properties[prop].name;
+                    var propValue = properties[prop].value;
+
+                    if (propValue) {
+                        if (propValue.type == "function") {
+                            funcs.push(propName + '()F');
+                        }
+                    }
+                }
+                funcs.sort();
+
+                props = props.concat(funcs);
+
+                for(var i = 0; i < props.length; i++) {
+                    y += boxHeight;
+                    var text = props[i];
+                    var type = text.substring(text.length - 1);
+                    text = text.substring(0, text.length - 1);
+                    tooltip = text;
+                    if (type === 'F' || type == 'O' || type === 'A' || type === 'N') {
+                    } else {
+                        text = text.substring(0, text.indexOf(' : '));
+                    }
+                    var rect = svg.rect(g, x, y, boxWidth, boxHeight,  {fill: 'white', stroke: 'black', strokeWidth: '1'});
+                    svg.title(rect, tooltip);
+                    svg.text(g, x+20, y+16, text, {fill: 'black'});
+
+                    if (type === 'A') {
+                        svg.text(g, x+5, y+15, '[]', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
+                    } else if (type === 'O') {
+                        svg.text(g, x+7, y+16, 'o', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
+                    } else if (type === 'S') {
+                        svg.text(g, x+5, y+15, '\'\'', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
+                    } else if (type === 'F') {
+                        svg.text(g, x+5, y+15, 'fx', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
+                    } else if (type === 'B') {
+                        svg.text(g, x+4, y+15, '0|1', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
+                    } else if (type === '#') {
+                        svg.text(g, x+7, y+15, '#', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
+                    } else if (type === '-') {
+                        svg.text(g, x+6, y+15, '-', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
+                    } else if (type === 'N') {
+                    }
+                }
+            }
+
+            function doDrawJavascriptObject(ox, oy, value, properties, internalProperties, hasConstructorAsOwnProperty, __proto__Object, constructorObject) {
                 var x = ox;
                 var y = oy;
                 // Normal object i.e. not a prototype like
@@ -320,80 +396,7 @@ WebInspector.JSODTab = function(name, value) {
                     var pr = svg.line(g, x+boxWidth, y+12, x+(boxWidth+(boxWidth/4)), y+12,  {stroke: 'black', markerEnd: 'url(#arrow)'});
                     svg.title(pr, 'Hidden reference to prototype object.');
 
-                    // Properties of normal object
-                    var props = [];
-                    var tooltip;
-
-                    for(var prop = 0; prop < properties.length; prop++) {
-                        var propName = properties[prop].name;
-                        var propValue = properties[prop].value;
-                        // Skip __proto__ as we already rendered it above
-                        if ('__proto__' == propName) {
-                            continue;
-                        }
-
-                        if (propValue) {
-                            if (propValue.type === 'function') {
-                                continue;
-                            } else if (propValue.type === 'object') {
-                                props.push(propName + 'O');
-                            } else if (propValue.type === 'number') {
-                                props.push(propName + ' : ' + propValue.value + '#');
-                            } else if (propValue.type === 'string') {
-                                props.push(propName + ' : \'' + propValue.value.substring(0,36) + '\'S');
-                            } else {
-                                props.push(propName + ' : ' + propValue.value + (propValue.type === 'boolean' ? 'B' : '-'));
-                            }
-                        }
-                    }
-                    props.sort();
-
-                    var funcs = [];
-                    for(var prop = 0; prop < properties.length; prop++) {
-                        var propName = properties[prop].name;
-                        var propValue = properties[prop].value;
-
-                        if (propValue) {
-                            if (propValue.type == "function") {
-                                funcs.push(propName + '()F');
-                            }
-                        }
-                    }
-                    funcs.sort();
-
-                    props = props.concat(funcs);
-
-                    for(var i = 0; i < props.length; i++) {
-                        y += boxHeight;
-                        var text = props[i];
-                        var type = text.substring(text.length - 1);
-                        text = text.substring(0, text.length - 1);
-                        tooltip = text;
-                        if (type === 'F' || type == 'O' || type === 'A' || type === 'N') {
-                        } else {
-                            text = text.substring(0, text.indexOf(' : '));
-                        }
-                        var rect = svg.rect(g, x, y, boxWidth, boxHeight,  {fill: 'white', stroke: 'black', strokeWidth: '1'});
-                        svg.title(rect, tooltip);
-                        svg.text(g, x+20, y+16, text, {fill: 'black'});
-
-                        if (type === 'A') {
-                            svg.text(g, x+5, y+15, '[]', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
-                        } else if (type === 'O') {
-                            svg.text(g, x+7, y+16, 'o', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
-                        } else if (type === 'S') {
-                            svg.text(g, x+5, y+15, '\'\'', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
-                        } else if (type === 'F') {
-                            svg.text(g, x+5, y+15, 'fx', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
-                        } else if (type === 'B') {
-                            svg.text(g, x+4, y+15, '0|1', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
-                        } else if (type === '#') {
-                            svg.text(g, x+7, y+15, '#', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
-                        } else if (type === '-') {
-                            svg.text(g, x+6, y+15, '-', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
-                        } else if (type === 'N') {
-                        }
-                    }
+                    doDrawJavascriptObjectProperties(x, y, properties, internalProperties);
                 }
 
                 // prototype object
@@ -411,7 +414,7 @@ WebInspector.JSODTab = function(name, value) {
                 }
                 svg.rect(g, x, y, boxWidth, boxHeight,  {fill: 'white', stroke: 'gray', strokeWidth: '1'});
                 svg.text(g, x+6, y+15, 'o', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
-                svg.text(g, x+20, y+16, '{} : ' + __proto__Object.description, {fill: 'black'});
+                svg.text(g, x+20, y+16, '{} : ', {fill: 'black'});
                 var c2pr = svg.line(g, x+(boxWidth+(boxWidth/4)), y+12, x+boxWidth, y+12, {stroke: 'black', markerEnd: 'url(#arrow)'});
                 svg.title(c2pr, 'Reference to prototype object from Constructor function.');
 
@@ -435,80 +438,12 @@ WebInspector.JSODTab = function(name, value) {
                 }
 
                 if (hasConstructorAsOwnProperty) {
-                    // Properties of normal object
-                    props = [];
-                    for(var prop = 0; prop < properties.length; prop++) {
-                        var propName = properties[prop].name;
-                        var propValue = properties[prop].value;
-                        // Skip __proto__ as we already rendered it above
-                        if ('__proto__' == propName) {
-                            continue;
-                        }
-
-                        if (propValue) {
-                            if (propValue.type === 'function') {
-                                continue;
-                            } else if (propValue.type === 'object') {
-                                props.push(propName + 'O');
-                            } else if (propValue.type === 'number') {
-                                props.push(propName + ' : ' + propValue.value + '#');
-                            } else if (propValue.type === 'string') {
-                                props.push(propName + ' : \'' + propValue.value.substring(0,36) + '\'S');
-                            } else {
-                                props.push(propName + ' : ' + propValue.value + (propValue.type === 'boolean' ? 'B' : '-'));
-                            }
-                        }
-                    }
-                    props.sort();
-
-                    var funcs = [];
-                    for(var prop = 0; prop < properties.length; prop++) {
-                        var propName = properties[prop].name;
-                        var propValue = properties[prop].value;
-
-                        if (propValue) {
-                            if (propValue.type == "function") {
-                                funcs.push(propName + '()F');
-                            }
-                        }
-                    }
-                    funcs.sort();
-
-                    props = props.concat(funcs);
-
-                    for(var i = 0; i < props.length; i++) {
-                        y += boxHeight;
-                        var text = props[i];
-                        var type = text.substring(text.length - 1);
-                        text = text.substring(0, text.length - 1);
-                        tooltip = text;
-                        if (type === 'F' || type == 'O' || type === 'A' || type === 'N') {
-                        } else {
-                            text = text.substring(0, text.indexOf(' : '));
-                        }
-                        var rect = svg.rect(g, x, y, boxWidth, boxHeight,  {fill: 'white', stroke: 'black', strokeWidth: '1'});
-                        svg.title(rect, tooltip);
-                        svg.text(g, x+20, y+16, text, {fill: 'black'});
-
-                        if (type === 'A') {
-                            svg.text(g, x+5, y+15, '[]', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
-                        } else if (type === 'O') {
-                            svg.text(g, x+7, y+16, 'o', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
-                        } else if (type === 'S') {
-                            svg.text(g, x+5, y+15, '\'\'', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
-                        } else if (type === 'F') {
-                            svg.text(g, x+5, y+15, 'fx', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
-                        } else if (type === 'B') {
-                            svg.text(g, x+4, y+15, '0|1', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
-                        } else if (type === '#') {
-                            svg.text(g, x+7, y+15, '#', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
-                        } else if (type === '-') {
-                            svg.text(g, x+6, y+15, '-', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
-                        } else if (type === 'N') {
-                        }
-                    }
+                    doDrawJavascriptObjectProperties(x, y, properties, internalProperties);
                 } else {
-
+                    function get__proto__Properties(x, y, properties, internalProperties) {
+                        doDrawJavascriptObjectProperties(x, y, properties, internalProperties);
+                    }
+                    WebInspector.RemoteObject.loadFromObjectPerProto(__proto__Object, get__proto__Properties.bind(this, x, y));
                 }
 
                 // Constructor function
@@ -601,9 +536,8 @@ WebInspector.JSODTab = function(name, value) {
                 }
             }
 
-            function callback(properties, internalProperties)
+            function callback(ox, oy, properties, internalProperties)
             {
-
                 if (!properties)
                     return;
 
@@ -619,24 +553,23 @@ WebInspector.JSODTab = function(name, value) {
                     }
                 }
 
-
                 if ((!constructorObject) && __proto__Object) {
-                    function getConstructorObject(properties, internalProperties) {
-                        for(var ci = 0; ci < properties.length; ci++) {
-                            if ('constructor' === properties[ci].name) {
-                                constructorObject = properties[ci].value;
+                    function getConstructorObject(ox, oy, __proto__properties, internalProperties) {
+                        for(var ci = 0; ci < __proto__properties.length; ci++) {
+                            if ('constructor' === __proto__properties[ci].name) {
+                                constructorObject = __proto__properties[ci].value;
                                 break;
                             }
                         }
-                        doDrawJavascriptObject(value, properties, internalProperties, hasConstructorAsOwnProperty, __proto__Object, constructorObject);
+                        doDrawJavascriptObject(ox, oy, value, properties, internalProperties, hasConstructorAsOwnProperty, __proto__Object, constructorObject);
                     }
-                    WebInspector.RemoteObject.loadFromObjectPerProto(__proto__Object, getConstructorObject.bind(this));
+                    WebInspector.RemoteObject.loadFromObjectPerProto(__proto__Object, getConstructorObject.bind(this, ox, oy));
                 } else {
-                    doDrawJavascriptObject(value, properties, internalProperties, hasConstructorAsOwnProperty,  __proto__Object, constructorObject);
+                    doDrawJavascriptObject(ox, oy, value, properties, internalProperties, hasConstructorAsOwnProperty,  __proto__Object, constructorObject);
                 }
             }
 
-            WebInspector.RemoteObject.loadFromObjectPerProto(value, callback.bind(this));
+            WebInspector.RemoteObject.loadFromObjectPerProto(value, callback.bind(this, ox, oy));
         }
         drawGraph(svg, g, name, value);
     });
