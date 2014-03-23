@@ -298,13 +298,9 @@ WebInspector.JSODTab = function(name, value) {
 
                 var hasConstructorAsOwnProperty = false;
                 var constructorObject;
-                var __proto__Object;
                 for(var ci = 0; ci < properties.length; ci++) {
-                    if ('__proto_' === properties[ci].name) {
-                        __proto__Object = properties[ci].value;
-                    } else if ('constructor' === properties[ci].name) {
+                    if ('constructor' === properties[ci].name) {
                         constructorObject = properties[ci].value;
-                        __proto__Object = value;
                         hasConstructorAsOwnProperty = true;
                     }
                 }
@@ -317,13 +313,13 @@ WebInspector.JSODTab = function(name, value) {
 
                     if (value.type === "object" && value.subtype == "array") {
                         svg.text(g, x+5, y+16, '[]', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
-                        svg.text(g, x+20, y+16, label + ' : []', {fill: 'black'});
+                        svg.text(g, x+20, y+16, label + ' : ' + value.description, {fill: 'black'});
                     } else if (value.type === "function") {
                         svg.text(g, x+5, y+16, 'fx', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
-                        svg.text(g, x+20, y+16, label + ' : ' + (value.name), {fill: 'black'});
+                        svg.text(g, x+20, y+16, label + ' : ' + value.description + '()', {fill: 'black'});
                     } else {
                         svg.text(g, x+7, y+16, 'o', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
-                        svg.text(g, x+20, y+16, label + ' : ' + (value.constructor && value.constructor.name), {fill: 'black'});
+                        svg.text(g, x+20, y+16, label + ' : ' + value.description, {fill: 'black'});
                     }
 
                     y += boxHeight;
