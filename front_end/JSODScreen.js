@@ -1,0 +1,622 @@
+/*
+ * Copyright (C) 2013 Google Inc. All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ *
+ *     * Redistributions of source code must retain the above copyright
+ * notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above
+ * copyright notice, this list of conditions and the following disclaimer
+ * in the documentation and/or other materials provided with the
+ * distribution.
+ *     * Neither the name of Google Inc. nor the names of its
+ * contributors may be used to endorse or promote products derived from
+ * this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+/**
+ * @constructor
+ * @param {!function()} onHide
+ * @extends {WebInspector.HelpScreen}
+ */
+WebInspector.JSODScreen = function(onHide, name, value)
+{
+    WebInspector.HelpScreen.call(this);
+    this.element.id = "settings-screen";
+
+    /** @type {function()} */
+    this._onHide = onHide;
+
+    this._tabbedPane = new WebInspector.TabbedPane();
+    this._tabbedPane.element.classList.add("help-window-main");
+    var jsodLabelElement = document.createElement("div");
+    jsodLabelElement.className = "help-window-label";
+    jsodLabelElement.createTextChild("Diagram");
+    this._tabbedPane.element.insertBefore(jsodLabelElement, this._tabbedPane.element.firstChild);
+    this._tabbedPane.element.appendChild(this._createCloseButton());
+
+    WebInspector.JSODScreen.Tabs.JSOD = name;
+    var jsodTab = new WebInspector.JSODTab(name, value);
+    this._tabbedPane.appendTab(WebInspector.JSODScreen.Tabs.JSOD, WebInspector.JSODScreen.Tabs.JSOD, jsodTab);
+    this._tabbedPane.selectTab(jsodTab.id);
+
+    this._tabbedPane.shrinkableTabs = false;
+    this._tabbedPane.verticalTabLayout = true;
+}
+
+WebInspector.JSODScreen.prototype = {
+    /**
+     * @override
+     */
+    wasShown: function()
+    {
+        this._tabbedPane.show(this.element);
+        WebInspector.HelpScreen.prototype.wasShown.call(this);
+    },
+
+    /**
+     * @override
+     * @return {boolean}
+     */
+    isClosingKey: function(keyCode)
+    {
+        return [
+            WebInspector.KeyboardShortcut.Keys.Enter.code,
+            WebInspector.KeyboardShortcut.Keys.Esc.code,
+        ].indexOf(keyCode) >= 0;
+    },
+
+    /**
+     * @override
+     */
+    willHide: function()
+    {
+        this._onHide();
+        WebInspector.HelpScreen.prototype.willHide.call(this);
+    },
+
+    __proto__: WebInspector.HelpScreen.prototype
+}
+
+WebInspector.JSODScreen.Tabs = {
+    JSOD: ""
+}
+
+WebInspector.JSODTab = function(name, value) {
+    WebInspector.VBox.call(this);
+    this.value = value;
+
+    var toolbar = this.element.createChild("div");
+    toolbar.classList.add('JSOD-toolbar');
+
+    var table = toolbar.createChild("table");
+    table.classList.add('JSOD-table');
+
+    var tr1 = table.createChild("tr");
+    tr1.createChild("td");
+    tr1.createChild("td");
+    tr1.createChild("td");
+    var tr1td4 = tr1.createChild("td");
+    var panNorthWestButton = tr1td4.createChild("button");panNorthWestButton.classList.add('JSOD-button');panNorthWestButton.createTextChild('\u25E4    ');
+    var tr1td5 = tr1.createChild("td");
+    var panNorthButton = tr1td5.createChild("button");panNorthButton.classList.add('JSOD-button');panNorthButton.createTextChild('\u25B2');
+    var tr1td6 = tr1.createChild("td");
+    var panNorthEastButton = tr1td6.createChild("button");panNorthEastButton.classList.add('JSOD-button');panNorthEastButton.createTextChild('\u25E5');
+
+    var tr2 = table.createChild("tr");
+    var tr2td1 = tr2.createChild("td");
+    var zoomOutButton = tr2td1.createChild("button");zoomOutButton.classList.add('JSOD-button');zoomOutButton.createTextChild('\uFF0D');
+    var tr2td2 = tr2.createChild("td");
+    var zoomRange     = tr2td2.createChild("input");zoomRange.classList.add('JSOD-range');zoomRange.setAttribute("type", "range");zoomRange.setAttribute("min", "-3");zoomRange.setAttribute("max", "3");
+    var tr2td3 = tr2.createChild("td");
+    var zoomInButton  = tr2td3.createChild("button");zoomInButton.classList.add('JSOD-button');zoomInButton.createTextChild('\uff0b');
+    var tr2td4 = tr2.createChild("td");
+    var panWestButton = tr2td4.createChild("button");panWestButton.classList.add('JSOD-button');panWestButton.createTextChild('\u25c0');
+    var tr2td5 = tr2.createChild("td");
+    var homeButton = tr2td5.createChild("button");homeButton.classList.add('JSOD-button');homeButton.createTextChild('\u25A3');
+    var tr2td6 = tr2.createChild("td");
+    var panEastButton = tr2td6.createChild("button");panEastButton.classList.add('JSOD-button');panEastButton.createTextChild('\u25B6');
+
+    var tr3 = table.createChild("tr");
+    tr3.createChild("td");
+    tr3.createChild("td");
+    tr3.createChild("td");
+    var tr3td4 = tr3.createChild("td");
+    var panSouthWestButton = tr3td4.createChild("button");panSouthWestButton.classList.add('JSOD-button');panSouthWestButton.createTextChild('\u25E3');
+    var tr3td5 = tr3.createChild("td");
+    var panSouthButton = tr3td5.createChild("button");panSouthButton.classList.add('JSOD-button');panSouthButton.createTextChild('\u25BC');
+    var tr3td6 = tr3.createChild("td");
+    var panSouthEastButton = tr3td6.createChild("button");panSouthEastButton.classList.add('JSOD-button');panSouthEastButton.createTextChild('\u25E2');
+
+    this.element.createChild("hr")
+
+    var svgDiv= this.element.createChild("div");
+    svgDiv.classList.add('JSOD');
+
+    $(svgDiv).svg(function(svg) {
+
+        var zoomlevel = 1.0;
+        var ox = 0;
+        var oy = 0;
+
+        var zoomlevel = 1.0;
+
+        var ox = 0;
+        var oy = 0;
+        var panzoom = function() {
+            $(svg.root().childNodes[1]).animate({svgTransform:'translate(' + ox + ',' + oy + ') scale(' + zoomlevel + ')'}, 0);
+        }
+
+        var zoomPercents = [0.25, 0.50, 0.75, 1.00, 1.25, 1.5, 2.00];
+        var zoom = function(level) {
+            zoomlevel = zoomPercents[parseInt(level)+3];
+            panzoom();
+        }
+
+        var zoomIn = function() {
+            var zoomedAt = zoomRange.value;
+            zoomedAt = Math.min(zoomedAt, 3);
+            zoomedAt = Math.max(zoomedAt, -3);
+            zoomedAt++;
+            zoomedAt = Math.min(zoomedAt, 3);
+            zoomedAt = Math.max(zoomedAt, -3);
+            zoomRange.value = zoomedAt;
+            zoom(zoomRange.value);
+        }
+
+        var zoomTo = function() {
+            zoom(zoomRange.value);
+        }
+
+        var zoomOut = function() {
+            var zoomedAt = zoomRange.value;
+            zoomedAt = Math.min(zoomedAt, 3);
+            zoomedAt = Math.max(zoomedAt, -3);
+            zoomedAt--;
+            zoomedAt = Math.min(zoomedAt, 3);
+            zoomedAt = Math.max(zoomedAt, -3);
+            zoomRange.value = zoomedAt;
+            zoom(zoomRange.value);
+        }
+
+        var pan = function(dx, dy) {
+            ox += dx;
+            oy += dy;
+            panzoom();
+        }
+
+        var panNorthWest = function() {
+            pan(-100, -100);
+        }
+
+        var panNorth = function() {
+            pan(0, -100);
+        }
+
+        var panNorthEast = function() {
+            pan(+100, -100);
+        }
+
+        var panWest = function() {
+            pan(-100, 0);
+        }
+
+        var home = function() {
+            ox = 0;
+            oy = 0;
+            panzoom();
+        }
+
+        var panEast = function() {
+            pan(100, 0);
+        }
+
+        var panSouthWest = function() {
+            pan(-100, +100);
+        }
+
+        var panSouth = function() {
+            pan(0, +100);
+        }
+
+        var panSouthEast = function() {
+            pan(100, +100);
+        }
+
+        $(zoomInButton).on('click', zoomIn);
+        $(zoomRange).on('change', zoomTo);
+        $(zoomOutButton).on('click', zoomOut);
+
+        $(panNorthWestButton).on('click', panNorthWest);
+        $(panNorthButton).on('click', panNorth);
+        $(panNorthEastButton).on('click', panNorthEast);
+        $(panWestButton).on('click', panWest);
+        $(homeButton).on('click', home);
+        $(panEastButton).on('click', panEast);
+        $(panSouthWestButton).on('click', panSouthWest);
+        $(panSouthButton).on('click', panSouth);
+        $(panSouthEastButton).on('click', panSouthEast);
+
+        var defs = svg.defs(null, "jsoddefs")
+        var arrow = svg.marker(defs, 'arrow', 9, 6, 13, 13);
+        var arrowHead = svg.createPath();
+        svg.path(arrow, arrowHead.move(2,2).line(2,11).
+        line(10, 6).line(2,2).close(), {fill: '#000000'});
+        var g = svg.group({fontFamily: 'Courier', fontSize: '12'});
+
+        function drawGraph(svg, gr, name, remoteValue) {
+            var value = remoteValue;
+
+            if (value) {
+                if (value.value) {
+                    value = value.value;
+                }
+                var boxWidth = 320;
+                var boxHeight = 24;
+                var x = boxWidth/4;
+                var y = boxHeight;
+                // Initially just use the passed in name as label
+                var label = name;
+                do {
+                    drawJavascriptObject(svg, gr, label, value, remoteValue, x, y, boxWidth, boxHeight);
+                    if (value.hasOwnProperty('constructor')) {
+                        x += 800;
+                    } else {
+                        x += 1200;
+                    }
+                    y += 96;
+                    label = '{}';
+                    value = value.constructor.prototype.__proto__;
+                } while (value);
+            }
+        }
+
+        function drawJavascriptObject(svg, gr, label, value, remoteValue, ox, oy, boxWidth, boxHeight) {
+
+            var g = svg.group(gr, 'g', {fontFamily: 'Courier', fontSize: '12'});
+
+            var x = ox;
+            var y = oy;
+
+            // Normal object i.e. not a prototype like
+            // i.e. does not have constructor as it's own property
+            if (!value.hasOwnProperty('constructor')) {
+
+                svg.line(g, x-(boxWidth/4), y+12, x, y+12,  {stroke: 'black', markerEnd: 'url(#arrow)'});
+                svg.rect(g, x, y, boxWidth, boxHeight,  {fill: 'white', stroke: 'black', strokeWidth: '1'});
+
+                if (typeof value === "array") {
+                    svg.text(g, x+5, y+16, '[]', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
+                    svg.text(g, x+20, y+16, label + ' : []', {fill: 'black'});
+                } else if (typeof value === "function") {
+                    svg.text(g, x+5, y+16, 'fx', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
+                    svg.text(g, x+20, y+16, label + ' : ' + (value.name), {fill: 'black'});
+                } else {
+                    svg.text(g, x+7, y+16, 'o', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
+                    svg.text(g, x+20, y+16, label + ' : ' + (value.constructor && value.constructor.name), {fill: 'black'});
+                }
+
+                y += boxHeight;
+                svg.rect(g, x, y, boxWidth, boxHeight,  {fill: 'white', stroke: 'gray', fill: 'ivory'});
+                svg.text(g, x+5, y+16, 'fx', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
+                svg.text(g, x+20, y+16, 'constructor : ' + (value.constructor.name || ''), {fill: 'lightGray'});
+                var cfr = svg.line(g, x+boxWidth, y+12, x+(3*boxWidth), y+12,  {stroke: 'lightGray', markerEnd: 'url(#arrow)'});
+                svg.title(cfr, 'Inherited constructor property - reference to Constructor function.');
+
+                y += boxHeight;
+                svg.rect(g, x, y, boxWidth, boxHeight,  {fill: 'white', stroke: 'black'});
+                svg.text(g, x+7, y+16, 'o', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
+                svg.text(g, x+20, y+16, '__proto__', {fill: 'black'});
+                var pr = svg.line(g, x+boxWidth, y+12, x+(boxWidth+(boxWidth/4)), y+12,  {stroke: 'black', markerEnd: 'url(#arrow)'});
+                svg.title(pr, 'Hidden reference to prototype object.');
+
+                /**
+                 * @param {?Array.<!WebInspector.RemoteObjectProperty>} properties
+                 * @param {?Array.<!WebInspector.RemoteObjectProperty>} internalProperties
+                 * @this {WebInspector.ObjectPropertiesSection}
+                 */
+                function callback(x, y, properties, internalProperties)
+                {
+                    if (!properties)
+                        return;
+                    // Properties of normal object
+                    var props = [];
+                    var tooltip;
+
+                    for(var prop = 0; prop < properties.length; prop++) {
+                        var propName = properties[prop].name;
+                        var propValue = properties[prop].value;
+
+                        if (propValue) {
+                            if (propValue.type === 'function') {
+                                continue;
+                            } else if (propValue.type === 'object') {
+                                props.push(propName + 'O');
+                            } else if (propValue.type === 'number') {
+                                props.push(propName + ' : ' + propValue.value + '#');
+                            } else if (propValue.type === 'string') {
+                                props.push(propName + ' : \'' + propValue.value.substring(0,36) + '\'S');
+                            } else {
+                                props.push(propName + ' : ' + propValue.value + (propValue.type === 'boolean' ? 'B' : '-'));
+                            }
+                        }
+                    }
+                    props.sort();
+
+                    var funcs = [];
+                    for(var prop = 0; prop < properties.length; prop++) {
+                        var propName = properties[prop].name;
+                        var propValue = properties[prop].value;
+
+                        if (propValue) {
+                            if (propValue.type == "function") {
+                                funcs.push(propName + '()F');
+                            }
+                        }
+                    }
+                    funcs.sort();
+
+                    props = props.concat(funcs);
+
+                    for(var prop = 0; i < props.length; i++) {
+                        y += boxHeight;
+                        var text = props[i];
+                        var type = text.substring(text.length - 1);
+                        text = text.substring(0, text.length - 1);
+                        tooltip = text;
+                        if (type === 'F' || type == 'O' || type === 'A' || type === 'N') {
+                        } else {
+                            text = text.substring(0, text.indexOf(' : '));
+                        }
+                        var rect = svg.rect(g, x, y, boxWidth, boxHeight,  {fill: 'white', stroke: 'black', strokeWidth: '1'});
+                        svg.title(rect, tooltip);
+                        svg.text(g, x+20, y+16, text, {fill: 'black'});
+
+                        if (type === 'A') {
+                            svg.text(g, x+5, y+15, '[]', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
+                        } else if (type === 'O') {
+                            svg.text(g, x+7, y+16, 'o', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
+                        } else if (type === 'S') {
+                            svg.text(g, x+5, y+15, '\'\'', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
+                        } else if (type === 'F') {
+                            svg.text(g, x+5, y+15, 'fx', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
+                        } else if (type === 'B') {
+                            svg.text(g, x+4, y+15, '0|1', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
+                        } else if (type === '#') {
+                            svg.text(g, x+7, y+15, '#', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
+                        } else if (type === '-') {
+                            svg.text(g, x+6, y+15, '-', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
+                        } else if (type === 'N') {
+                        }
+                    }
+                }
+
+                WebInspector.RemoteObject.loadFromObjectPerProto(remoteValue, callback.bind(this, x, y));
+            }
+
+            // prototype object
+            if (!value.hasOwnProperty('constructor')) {
+                x = ox+boxWidth+boxWidth/4;
+                y = oy + 2*boxHeight;
+            } else {
+                x = ox;
+                y = oy + 2*boxHeight;
+            }
+
+            if (value.hasOwnProperty('constructor')) {
+                var tp = svg.line(g, x-(boxWidth/4), y+12-(2*boxHeight), x-(boxWidth/8), y+12-(2*boxHeight), {stroke: 'black'});
+                var tp = svg.line(g, x-(boxWidth/8), y+12-(2*boxHeight), x, y+12,  {stroke: 'black', markerEnd: 'url(#arrow)'});
+            }
+            svg.rect(g, x, y, boxWidth, boxHeight,  {fill: 'white', stroke: 'gray', strokeWidth: '1'});
+            svg.text(g, x+6, y+15, 'o', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
+            if (value.hasOwnProperty('constructor')) {
+                svg.text(g, x+20, y+16, '{} : ' + (value.constructor.name), {fill: 'black'});
+            } else {
+                svg.text(g, x+20, y+16, '{} : ' + (value.__proto__ && value.__proto__.constructor.name), {fill: 'black'});
+            }
+            var c2pr = svg.line(g, x+(boxWidth+(boxWidth/4)), y+12, x+boxWidth, y+12, {stroke: 'black', markerEnd: 'url(#arrow)'});
+            svg.title(c2pr, 'Reference to prototype object from Constructor function.');
+
+            y += boxHeight;
+            svg.rect(g, x, y, boxWidth, boxHeight,  {fill: 'white', stroke: 'gray'});
+            svg.text(g, x+5, y+15, 'fx', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
+            svg.text(g, x+20, y+16, 'constructor', {fill: 'black'});
+            var p2cr = svg.line(g, x+boxWidth, y+12, x+(boxWidth+(boxWidth/8)), y+12,  {stroke: 'black'});
+            svg.title(p2cr, 'Reference to Constructor function.');
+            p2cr = svg.line(g, x+(boxWidth+(boxWidth/8)), y+12, x+(boxWidth+(boxWidth/8)), y-(boxHeight+(boxHeight/2)),  {stroke: 'black'});
+            svg.title(p2cr, 'Reference to Constructor function.');
+            p2cr = svg.line(g, x+(boxWidth+(boxWidth/8)), y-(boxHeight+(boxHeight/2)), x+(boxWidth+(boxWidth/4)), y-(boxHeight+(boxHeight/2)), {stroke: 'black', markerEnd: 'url(#arrow)'});
+            svg.title(p2cr, 'Reference to Constructor function.');
+            y += boxHeight;
+            svg.rect(g, x, y, boxWidth, boxHeight,  {fill: 'white', stroke: 'gray'});
+            svg.text(g, x+7, y+16, 'o', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
+            svg.text(g, x+20, y+16, '__proto__', {fill: 'black'});
+            if (value.__proto__) {
+                var ppr = svg.line(g, x+boxWidth, y+12, x+(boxWidth*2.375), y+12,  {stroke: 'black'});
+                svg.title(ppr, 'Hidden reference to prototype object.');
+            }
+
+            props = [];
+            if (value.hasOwnProperty('constructor')) {
+                var value__proto__ = value;
+            } else {
+                var value__proto__ = value.__proto__;
+            }
+            for(var prop in value__proto__) {
+                if (!value__proto__.hasOwnProperty(prop)) {
+                    continue;
+                }
+                var propValue = value__proto__[prop];
+                if (propValue) {
+                    if (typeof propValue === 'function') {
+                        continue;
+                    } else if (typeof propValue === 'object') {
+                        props.push((propValue.constructor && propValue.constructor.name) + ' ' + prop + 'O');
+                    } else if (typeof propValue === 'number') {
+                        props.push(prop + ' : ' + propValue + '#');
+                    } else if (typeof propValue === 'string') {
+                        props.push(prop + ' : \'' + propValue.substring(0,36) + '\'S');
+                    } else {
+                        props.push(prop + ' : ' + propValue + (typeof propValue === 'boolean' ? 'B' : '-'));
+                    }
+                }
+            }
+            props.sort();
+
+            var funcs = [];
+            for(var prop in value__proto__) {
+                if (!value__proto__.hasOwnProperty(prop)) {
+                    continue;
+                }
+                var propValue = value__proto__[prop];
+                if (typeof propValue === "function") {
+                    funcs.push(prop + '()F');
+                }
+            }
+            funcs.sort();
+
+            props = props.concat(funcs);
+
+            for(var i = 0; i < props.length; i++) {
+                y += boxHeight;
+                var text = props[i];
+                var type = text.substring(text.length - 1);
+                text = text.substring(0, text.length - 1);
+                tooltip = text;
+                if (type === 'F' || type == 'O' || type === 'A' || type === 'N') {
+                } else {
+                    text = text.substring(0, text.indexOf(' : '));
+                }
+                var rect = svg.rect(g, x, y, boxWidth, boxHeight,  {fill: 'white', stroke: 'gray', strokeWidth: '1'});
+                svg.title(rect, tooltip);
+                svg.text(g, x+20, y+16, text, {fill: 'black'});
+
+                if (type === 'A') {
+                    svg.text(g, x+5, y+15, '[]', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
+                } else if (type === 'O') {
+                    svg.text(g, x+7, y+16, 'o', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
+                } else if (type === 'S') {
+                    svg.text(g, x+5, y+15, '\'\'', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
+                } else if (type === 'F') {
+                    svg.text(g, x+5, y+15, 'fx', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
+                } else if (type === 'B') {
+                    svg.text(g, x+4, y+15, '0|1', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
+                } else if (type === '#') {
+                    svg.text(g, x+7, y+15, '#', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
+                } else if (type === '-') {
+                    svg.text(g, x+6, y+15, '-', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
+                } else if (type === 'N') {
+                }
+            }
+
+            // Constructor function
+            if (!value.hasOwnProperty('constructor')) {
+                x = ox+boxWidth+boxWidth/4+boxWidth+boxWidth/4;
+                y = oy;
+            } else {
+                x = ox+boxWidth+boxWidth/4;
+                y = oy;
+            }
+
+            y += boxHeight;
+            y -= boxHeight;
+            svg.rect(g, x, y, boxWidth, boxHeight,  {fill: 'white', stroke: 'lightGray'});
+            svg.text(g, x+7, y+16, 'o', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
+            svg.text(g, x+20, y+16, '__proto__', {fill: 'lightGray'});
+
+            y += boxHeight;
+            svg.rect(g, x, y, boxWidth, boxHeight,  {fill: 'white', stroke: 'lightGray'});
+            svg.text(g, x+5, y+16, 'fx', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
+            svg.text(g, x+20, y+16, 'function ' + (value.constructor.name || ''), {fill: 'black'});
+            y += boxHeight;
+            svg.rect(g, x, y, boxWidth, boxHeight,  {fill: 'white', stroke: 'lightGray'});
+            svg.text(g, x+20, y+16, 'prototype', {fill: 'black'});
+            svg.text(g, x+7, y+16, 'o', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
+            // y += boxHeight;
+            // svg.rect(g, x, y, boxWidth, boxHeight,  {fill: 'white', stroke: 'lightGray'});
+            // svg.text(g, x+7, y+16, 'o', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
+            // svg.text(g, x+20, y+16, '__proto__', {fill: 'black'});
+
+            props = [];
+            var value_constructor = value.constructor;
+            props.push('length' + ' : ' + value_constructor.length + '#');
+            props.push('name' + ' : ' + value_constructor.name + 'S');
+            for(var prop in value_constructor) {
+                if (!value_constructor.hasOwnProperty(prop)) {
+                    continue;
+                }
+                var propValue = value_constructor[prop];
+
+                props.push((propValue.constructor && propValue.constructor.name) + ' ' + prop + 'O');
+
+            }
+            props.sort();
+
+            var funcs = [];
+            for(var prop in value_constructor) {
+                if (!value_constructor.hasOwnProperty(prop)) {
+                    continue;
+                }
+                var propValue = value_constructor[prop];
+                if (typeof propValue === "function") {
+                    funcs.push(prop + '()F');
+                }
+            }
+            funcs.sort();
+
+            props = props.concat(funcs);
+
+            for(var i = 0; i < props.length; i++) {
+                y += boxHeight;
+                var text = props[i];
+                var type = text.substring(text.length - 1);
+                text = text.substring(0, text.length - 1);
+                tooltip = text;
+                if (type === 'F' || type == 'O' || type === 'A' || type === 'N') {
+                } else {
+                    text = text.substring(0, text.indexOf(' : '));
+                }
+                var rect = svg.rect(g, x, y, boxWidth, boxHeight,  {fill: 'white', stroke: 'lightGray', strokeWidth: '1'});
+                svg.title(rect, tooltip);
+                svg.text(g, x+20, y+16, text, {fill: 'black'});
+
+                if (type === 'A') {
+                    svg.text(g, x+5, y+15, '[]', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
+                } else if (type === 'O') {
+                    svg.text(g, x+7, y+16, 'o', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
+                } else if (type === 'S') {
+                    svg.text(g, x+5, y+15, '\'\'', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
+                } else if (type === 'F') {
+                    svg.text(g, x+5, y+15, 'fx', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
+                } else if (type === 'B') {
+                    svg.text(g, x+4, y+15, '0|1', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
+                } else if (type === '#') {
+                    svg.text(g, x+7, y+15, '#', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
+                } else if (type === '-') {
+                    svg.text(g, x+6, y+15, '-', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
+                } else if (type === 'N') {
+                }
+            }
+
+        }
+        drawGraph(svg, g, name, value);
+    });
+}
+
+WebInspector.JSODTab.prototype = {
+    __proto__: WebInspector.VBox.prototype
+}

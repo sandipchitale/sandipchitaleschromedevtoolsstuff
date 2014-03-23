@@ -1,0 +1,20 @@
+.JSOD {
+	border: 1px solid gray;
+	overflow: auto;
+}
+
+.JSOD-toolbar {
+	text-align: center;
+}
+
+.JSOD-table {
+	text-align: center;
+}
+
+.JSOD-button {
+	vertical-align: middle;
+}
+
+.JSOD-range {
+	vertical-align: middle;
+}
