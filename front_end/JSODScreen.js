@@ -263,9 +263,6 @@ WebInspector.JSODTab = function(name, value) {
             var value = remoteValue;
 
             if (value) {
-                if (value.value) {
-                    value = value.value;
-                }
                 var boxWidth = 320;
                 var boxHeight = 24;
                 var x = boxWidth/4;
@@ -318,10 +315,10 @@ WebInspector.JSODTab = function(name, value) {
                     svg.line(g, x-(boxWidth/4), y+12, x, y+12,  {stroke: 'black', markerEnd: 'url(#arrow)'});
                     svg.rect(g, x, y, boxWidth, boxHeight,  {fill: 'white', stroke: 'black', strokeWidth: '1'});
 
-                    if (typeof value === "array") {
+                    if (value.type === "object" && value.subtype == "array") {
                         svg.text(g, x+5, y+16, '[]', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
                         svg.text(g, x+20, y+16, label + ' : []', {fill: 'black'});
-                    } else if (typeof value === "function") {
+                    } else if (value.type === "function") {
                         svg.text(g, x+5, y+16, 'fx', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
                         svg.text(g, x+20, y+16, label + ' : ' + (value.name), {fill: 'black'});
                     } else {
@@ -350,6 +347,7 @@ WebInspector.JSODTab = function(name, value) {
                     for(var prop = 0; prop < properties.length; prop++) {
                         var propName = properties[prop].name;
                         var propValue = properties[prop].value;
+                        // Skip __proto__ as we already rendered it above
                         if ('__proto__' == propName) {
                             continue;
                         }
