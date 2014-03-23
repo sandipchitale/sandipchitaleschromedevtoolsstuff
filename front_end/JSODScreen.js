@@ -259,9 +259,7 @@ WebInspector.JSODTab = function(name, value) {
         line(10, 6).line(2,2).close(), {fill: '#000000'});
         var g = svg.group({fontFamily: 'Courier', fontSize: '12'});
 
-        function drawGraph(svg, gr, name, remoteValue) {
-            var value = remoteValue;
-
+        function drawGraph(svg, gr, name, value) {
             if (value) {
                 var boxWidth = 320;
                 var boxHeight = 24;
@@ -270,7 +268,7 @@ WebInspector.JSODTab = function(name, value) {
                 // Initially just use the passed in name as label
                 var label = name;
                 do {
-                    drawJavascriptObject(svg, gr, label, value, remoteValue, x, y, boxWidth, boxHeight);
+                    drawJavascriptObject(svg, gr, label, value, x, y, boxWidth, boxHeight);
                     if (value.hasOwnProperty('constructor')) {
                         x += 800;
                     } else {
@@ -283,7 +281,7 @@ WebInspector.JSODTab = function(name, value) {
             }
         }
 
-        function drawJavascriptObject(svg, gr, label, value, remoteValue, ox, oy, boxWidth, boxHeight) {
+        function drawJavascriptObject(svg, gr, label, value, ox, oy, boxWidth, boxHeight) {
 
             var g = svg.group(gr, 'g', {fontFamily: 'Courier', fontSize: '12'});
 
@@ -298,11 +296,25 @@ WebInspector.JSODTab = function(name, value) {
 
                 var hasConstructorAsOwnProperty = false;
                 var constructorObject;
+                var __proto__Object;
                 for(var ci = 0; ci < properties.length; ci++) {
                     if ('constructor' === properties[ci].name) {
                         constructorObject = properties[ci].value;
                         hasConstructorAsOwnProperty = true;
+                    } else if ('__proto__' === properties[ci].name && properties[ci].value) {
+                        __proto__Object = properties[ci].value;
                     }
+                }
+
+                if ((!constructorObject) && __proto__Object) {
+                    function getConstructorObject(properties, internalProperties) {
+                        for(var ci = 0; ci < properties.length; ci++) {
+                            if ('constructor' === properties[ci].name) {
+                                constructorObject = properties[ci].value;
+                            }
+                        }
+                    }
+                    WebInspector.RemoteObject.loadFromObjectPerProto(__proto__Object, getConstructorObject.bind(this));
                 }
                 // Normal object i.e. not a prototype like
                 // i.e. does not have constructor as it's own property
@@ -617,7 +629,7 @@ WebInspector.JSODTab = function(name, value) {
                 }
             }
 
-            WebInspector.RemoteObject.loadFromObjectPerProto(remoteValue, callback.bind(this));
+            WebInspector.RemoteObject.loadFromObjectPerProto(value, callback.bind(this));
         }
         drawGraph(svg, g, name, value);
     });
