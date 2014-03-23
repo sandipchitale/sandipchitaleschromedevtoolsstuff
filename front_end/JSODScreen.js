@@ -105,6 +105,7 @@ WebInspector.JSODTab = function(name, value) {
 
     var table = toolbar.createChild("table");
     table.classList.add('JSOD-table');
+    table.setAttribute('align', 'center');
 
     var tr1 = table.createChild("tr");
     tr1.createChild("td");
