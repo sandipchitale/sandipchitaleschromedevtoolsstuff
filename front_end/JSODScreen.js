@@ -411,11 +411,7 @@ WebInspector.JSODTab = function(name, value) {
                 }
                 svg.rect(g, x, y, boxWidth, boxHeight,  {fill: 'white', stroke: 'gray', strokeWidth: '1'});
                 svg.text(g, x+6, y+15, 'o', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
-                if (hasConstructorAsOwnProperty) {
-                    svg.text(g, x+20, y+16, '{} : ' + (value.constructor.name), {fill: 'black'});
-                } else {
-                    svg.text(g, x+20, y+16, '{} : ' + (value.__proto__ && value.__proto__.constructor.name), {fill: 'black'});
-                }
+                svg.text(g, x+20, y+16, '{} : ' + __proto__Object.description, {fill: 'black'});
                 var c2pr = svg.line(g, x+(boxWidth+(boxWidth/4)), y+12, x+boxWidth, y+12, {stroke: 'black', markerEnd: 'url(#arrow)'});
                 svg.title(c2pr, 'Reference to prototype object from Constructor function.');
 
@@ -438,77 +434,81 @@ WebInspector.JSODTab = function(name, value) {
                     svg.title(ppr, 'Hidden reference to prototype object.');
                 }
 
-                props = [];
                 if (hasConstructorAsOwnProperty) {
-                    var value__proto__ = value;
-                } else {
-                    var value__proto__ = value.__proto__;
-                }
-                for(var prop in value__proto__) {
-                    if (!value__proto__.hasOwnProperty(prop)) {
-                        continue;
-                    }
-                    var propValue = value__proto__[prop];
-                    if (propValue) {
-                        if (typeof propValue === 'function') {
+                    // Properties of normal object
+                    props = [];
+                    for(var prop = 0; prop < properties.length; prop++) {
+                        var propName = properties[prop].name;
+                        var propValue = properties[prop].value;
+                        // Skip __proto__ as we already rendered it above
+                        if ('__proto__' == propName) {
                             continue;
-                        } else if (typeof propValue === 'object') {
-                            props.push((propValue.constructor && propValue.constructor.name) + ' ' + prop + 'O');
-                        } else if (typeof propValue === 'number') {
-                            props.push(prop + ' : ' + propValue + '#');
-                        } else if (typeof propValue === 'string') {
-                            props.push(prop + ' : \'' + propValue.substring(0,36) + '\'S');
-                        } else {
-                            props.push(prop + ' : ' + propValue + (typeof propValue === 'boolean' ? 'B' : '-'));
+                        }
+
+                        if (propValue) {
+                            if (propValue.type === 'function') {
+                                continue;
+                            } else if (propValue.type === 'object') {
+                                props.push(propName + 'O');
+                            } else if (propValue.type === 'number') {
+                                props.push(propName + ' : ' + propValue.value + '#');
+                            } else if (propValue.type === 'string') {
+                                props.push(propName + ' : \'' + propValue.value.substring(0,36) + '\'S');
+                            } else {
+                                props.push(propName + ' : ' + propValue.value + (propValue.type === 'boolean' ? 'B' : '-'));
+                            }
                         }
                     }
-                }
-                props.sort();
+                    props.sort();
 
-                var funcs = [];
-                for(var prop in value__proto__) {
-                    if (!value__proto__.hasOwnProperty(prop)) {
-                        continue;
-                    }
-                    var propValue = value__proto__[prop];
-                    if (typeof propValue === "function") {
-                        funcs.push(prop + '()F');
-                    }
-                }
-                funcs.sort();
+                    var funcs = [];
+                    for(var prop = 0; prop < properties.length; prop++) {
+                        var propName = properties[prop].name;
+                        var propValue = properties[prop].value;
 
-                props = props.concat(funcs);
-
-                for(var i = 0; i < props.length; i++) {
-                    y += boxHeight;
-                    var text = props[i];
-                    var type = text.substring(text.length - 1);
-                    text = text.substring(0, text.length - 1);
-                    tooltip = text;
-                    if (type === 'F' || type == 'O' || type === 'A' || type === 'N') {
-                    } else {
-                        text = text.substring(0, text.indexOf(' : '));
+                        if (propValue) {
+                            if (propValue.type == "function") {
+                                funcs.push(propName + '()F');
+                            }
+                        }
                     }
-                    var rect = svg.rect(g, x, y, boxWidth, boxHeight,  {fill: 'white', stroke: 'gray', strokeWidth: '1'});
-                    svg.title(rect, tooltip);
-                    svg.text(g, x+20, y+16, text, {fill: 'black'});
+                    funcs.sort();
 
-                    if (type === 'A') {
-                        svg.text(g, x+5, y+15, '[]', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
-                    } else if (type === 'O') {
-                        svg.text(g, x+7, y+16, 'o', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
-                    } else if (type === 'S') {
-                        svg.text(g, x+5, y+15, '\'\'', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
-                    } else if (type === 'F') {
-                        svg.text(g, x+5, y+15, 'fx', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
-                    } else if (type === 'B') {
-                        svg.text(g, x+4, y+15, '0|1', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
-                    } else if (type === '#') {
-                        svg.text(g, x+7, y+15, '#', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
-                    } else if (type === '-') {
-                        svg.text(g, x+6, y+15, '-', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
-                    } else if (type === 'N') {
+                    props = props.concat(funcs);
+
+                    for(var i = 0; i < props.length; i++) {
+                        y += boxHeight;
+                        var text = props[i];
+                        var type = text.substring(text.length - 1);
+                        text = text.substring(0, text.length - 1);
+                        tooltip = text;
+                        if (type === 'F' || type == 'O' || type === 'A' || type === 'N') {
+                        } else {
+                            text = text.substring(0, text.indexOf(' : '));
+                        }
+                        var rect = svg.rect(g, x, y, boxWidth, boxHeight,  {fill: 'white', stroke: 'black', strokeWidth: '1'});
+                        svg.title(rect, tooltip);
+                        svg.text(g, x+20, y+16, text, {fill: 'black'});
+
+                        if (type === 'A') {
+                            svg.text(g, x+5, y+15, '[]', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
+                        } else if (type === 'O') {
+                            svg.text(g, x+7, y+16, 'o', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
+                        } else if (type === 'S') {
+                            svg.text(g, x+5, y+15, '\'\'', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
+                        } else if (type === 'F') {
+                            svg.text(g, x+5, y+15, 'fx', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
+                        } else if (type === 'B') {
+                            svg.text(g, x+4, y+15, '0|1', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
+                        } else if (type === '#') {
+                            svg.text(g, x+7, y+15, '#', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
+                        } else if (type === '-') {
+                            svg.text(g, x+6, y+15, '-', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
+                        } else if (type === 'N') {
+                        }
                     }
+                } else {
+
                 }
 
                 // Constructor function
