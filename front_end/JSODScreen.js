@@ -265,19 +265,7 @@ WebInspector.JSODTab = function(name, value) {
                 var boxHeight = 24;
                 var x = boxWidth/4;
                 var y = boxHeight;
-                // Initially just use the passed in name as label
-                var label = name;
-                do {
-                    drawJavascriptObject(svg, gr, label, value, x, y, boxWidth, boxHeight);
-                    if (value.hasOwnProperty('constructor')) {
-                        x += 800;
-                    } else {
-                        x += 1200;
-                    }
-                    y += 96;
-                    label = '{}';
-                    value = value.constructor.prototype.__proto__;
-                } while (value);
+                drawJavascriptObject(svg, gr, name, value, x, y, boxWidth, boxHeight);
             }
         }
 
@@ -385,21 +373,31 @@ WebInspector.JSODTab = function(name, value) {
                         svg.text(g, x+20, y+16, label + ' : ' + value.description, {fill: 'black'});
                     }
 
-                    y += boxHeight;
-                    svg.rect(g, x, y, boxWidth, boxHeight,  {fill: 'white', stroke: 'gray', fill: 'ivory'});
-                    svg.text(g, x+5, y+16, 'fx', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
-                    svg.text(g, x+20, y+16, 'constructor : ' + (value.constructor.name || ''), {fill: 'lightGray'});
-                    var cfr = svg.line(g, x+boxWidth, y+12, x+(3*boxWidth), y+12,  {stroke: 'lightGray', markerEnd: 'url(#arrow)'});
-                    svg.title(cfr, 'Inherited constructor property - reference to Constructor function.');
+                    if (__proto__Object) {
+                        y += boxHeight;
+                        svg.rect(g, x, y, boxWidth, boxHeight,  {fill: 'white', stroke: 'gray', fill: 'ivory'});
+                        svg.text(g, x+5, y+16, 'fx', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
+                        svg.text(g, x+20, y+16, 'constructor : ' + (value.constructor.name || ''), {fill: 'lightGray'});
+                        if (constructorObject) {
+                            var cfr = svg.line(g, x+boxWidth, y+12, x+(3*boxWidth), y+12,  {stroke: 'lightGray', markerEnd: 'url(#arrow)'});
+                            svg.title(cfr, 'Inherited constructor property - reference to Constructor function.');
+                        }
 
-                    y += boxHeight;
-                    svg.rect(g, x, y, boxWidth, boxHeight,  {fill: 'white', stroke: 'black'});
-                    svg.text(g, x+7, y+16, 'o', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
-                    svg.text(g, x+20, y+16, '__proto__', {fill: 'black'});
-                    var pr = svg.line(g, x+boxWidth, y+12, x+(boxWidth+(boxWidth/4)), y+12,  {stroke: 'black', markerEnd: 'url(#arrow)'});
-                    svg.title(pr, 'Hidden reference to prototype object.');
+                        y += boxHeight;
+                        svg.rect(g, x, y, boxWidth, boxHeight,  {fill: 'white', stroke: 'black'});
+                        svg.text(g, x+7, y+16, 'o', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
+                        svg.text(g, x+20, y+16, '__proto__', {fill: 'black'});
+                        if (__proto__Object) {
+                            var pr = svg.line(g, x+boxWidth, y+12, x+(boxWidth+(boxWidth/4)), y+12,  {stroke: 'black', markerEnd: 'url(#arrow)'});
+                            svg.title(pr, 'Hidden reference to prototype object.');
+                        }
+                    }
 
                     doDrawJavascriptObjectProperties(x, y, properties, internalProperties);
+                }
+
+                if (!hasConstructorAsOwnProperty  && !__proto__Object ) {
+                    return;
                 }
 
                 // prototype object
@@ -439,7 +437,7 @@ WebInspector.JSODTab = function(name, value) {
                 svg.rect(g, x, y, boxWidth, boxHeight,  {fill: 'white', stroke: 'gray'});
                 svg.text(g, x+7, y+16, 'o', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
                 svg.text(g, x+20, y+16, '__proto__', {fill: 'black'});
-                if (value.__proto__) {
+                if (__proto__Object) {
                     var ppr = svg.line(g, x+boxWidth, y+12, x+(boxWidth*2.375), y+12,  {stroke: 'black'});
                     svg.title(ppr, 'Hidden reference to prototype object.');
                 }
@@ -504,21 +502,32 @@ WebInspector.JSODTab = function(name, value) {
                     }
                 }
 
-                if ((!constructorObject) && __proto__Object) {
-                    var __proto____proto__Object;
-                    function getConstructorObject(ox, oy, __proto__properties, internalProperties) {
-                        for(var ci = 0; ci < __proto__properties.length; ci++) {
-                            if ('constructor' === __proto__properties[ci].name) {
-                                constructorObject = __proto__properties[ci].value;
-                            } else if ('__proto__' === __proto__properties[ci].name && __proto__properties[ci].value) {
-                                __proto____proto__Object = __proto__properties[ci].value;
-                            }
+                var __proto____proto__Object;
+                function getConstructorAnd__proto____proto__Object(ox, oy, __proto__properties, internalProperties) {
+                    for(var ci = 0; ci < __proto__properties.length; ci++) {
+                        if (!hasConstructorAsOwnProperty  && ('constructor' === __proto__properties[ci].name)) {
+                            constructorObject = __proto__properties[ci].value;
+                        } else if ('__proto__' === __proto__properties[ci].name && __proto__properties[ci].value) {
+                            __proto____proto__Object = __proto__properties[ci].value;
                         }
-                        doDrawJavascriptObject(ox, oy, value, properties, internalProperties, hasConstructorAsOwnProperty, __proto__Object, constructorObject, __proto____proto__Object);
                     }
-                    WebInspector.RemoteObject.loadFromObjectPerProto(__proto__Object, getConstructorObject.bind(this, ox, oy));
+                    doDrawJavascriptObject(ox, oy, value, properties, internalProperties, hasConstructorAsOwnProperty, __proto__Object, constructorObject, __proto____proto__Object);
+                    // Recurse
+                    if (__proto____proto__Object) {
+                        // Initially just use the passed in name as label
+                        if (hasConstructorAsOwnProperty) {
+                            ox += 800;
+                        } else {
+                            ox += 1200;
+                        }
+                        oy += 96;
+                        drawJavascriptObject(svg, gr, '{}', __proto____proto__Object, ox, oy, boxWidth, boxHeight);
+                    }
+                }
+                if (__proto__Object) {
+                    WebInspector.RemoteObject.loadFromObjectPerProto(__proto__Object, getConstructorAnd__proto____proto__Object.bind(this, ox, oy));
                 } else {
-                    doDrawJavascriptObject(ox, oy, value, properties, internalProperties, hasConstructorAsOwnProperty,  __proto__Object, constructorObject);
+                    doDrawJavascriptObject(ox, oy, value, properties, internalProperties, false);
                 }
             }
 
