@@ -364,7 +364,7 @@ WebInspector.JSODTab = function(name, value) {
                 }
             }
 
-            function doDrawJavascriptObject(ox, oy, value, properties, internalProperties, hasConstructorAsOwnProperty, __proto__Object, constructorObject) {
+            function doDrawJavascriptObject(ox, oy, value, properties, internalProperties, hasConstructorAsOwnProperty, __proto__Object, constructorObject, __proto____proto__Object) {
                 var x = ox;
                 var y = oy;
                 // Normal object i.e. not a prototype like
@@ -418,13 +418,9 @@ WebInspector.JSODTab = function(name, value) {
                 svg.rect(g, x, y, boxWidth, boxHeight,  {fill: 'white', stroke: 'gray', strokeWidth: '1'});
                 svg.text(g, x+6, y+15, 'o', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
                 if (hasConstructorAsOwnProperty) {
-                    svg.text(g, x+20, y+16, label + ' : ' + value.description, {fill: 'black'});
+                    svg.text(g, x+20, y+16, label + ' : ' + __proto__Object.description, {fill: 'black'});
                 } else {
-                    if (value.type === 'function') {
-                        svg.text(g, x+20, y+16, '{} : ' + functionName(value.description), {fill: 'black'});
-                    } else {
-                        svg.text(g, x+20, y+16, '{} : ' + value.description, {fill: 'black'});
-                    }
+                    svg.text(g, x+20, y+16, '{} : ' + __proto____proto__Object.description, {fill: 'black'});
                 }
                 var c2pr = svg.line(g, x+(boxWidth+(boxWidth/4)), y+12, x+boxWidth, y+12, {stroke: 'black', markerEnd: 'url(#arrow)'});
                 svg.title(c2pr, 'Reference to prototype object from Constructor function.');
@@ -565,14 +561,16 @@ WebInspector.JSODTab = function(name, value) {
                 }
 
                 if ((!constructorObject) && __proto__Object) {
+                    var __proto____proto__Object;
                     function getConstructorObject(ox, oy, __proto__properties, internalProperties) {
                         for(var ci = 0; ci < __proto__properties.length; ci++) {
                             if ('constructor' === __proto__properties[ci].name) {
                                 constructorObject = __proto__properties[ci].value;
-                                break;
+                            } else if ('__proto__' === __proto__properties[ci].name && __proto__properties[ci].value) {
+                                __proto____proto__Object = __proto__properties[ci].value;
                             }
                         }
-                        doDrawJavascriptObject(ox, oy, value, properties, internalProperties, hasConstructorAsOwnProperty, __proto__Object, constructorObject);
+                        doDrawJavascriptObject(ox, oy, value, properties, internalProperties, hasConstructorAsOwnProperty, __proto__Object, constructorObject, __proto____proto__Object);
                     }
                     WebInspector.RemoteObject.loadFromObjectPerProto(__proto__Object, getConstructorObject.bind(this, ox, oy));
                 } else {
