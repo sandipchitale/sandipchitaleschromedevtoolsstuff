@@ -392,7 +392,7 @@ WebInspector.JSODTab = function(name, value) {
                         svg.text(g, x+20, y+16, label + ' : ' + value.description, {fill: 'black'});
                     } else if (value.type === "function") {
                         svg.text(g, x+5, y+16, 'fx', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
-                        svg.text(g, x+20, y+16, label + ' : ' + functionName(value.description) + '()', {fill: 'black'});
+                        svg.text(g, x+20, y+16, label + ' : ' + functionName(value.description), {fill: 'black'});
                     } else {
                         svg.text(g, x+7, y+16, 'o', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
                         svg.text(g, x+20, y+16, label + ' : ' + value.description, {fill: 'black'});
@@ -500,7 +500,7 @@ WebInspector.JSODTab = function(name, value) {
                 y += boxHeight;
                 svg.rect(g, x, y, boxWidth, boxHeight,  {fill: 'white', stroke: 'lightGray'});
                 svg.text(g, x+5, y+16, 'fx', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
-                svg.text(g, x+20, y+16, 'function ' + functionName(constructorObject.description) + '()', {fill: 'black'});
+                svg.text(g, x+20, y+16, 'function ' + functionName(constructorObject.description), {fill: 'black'});
                 y += boxHeight;
                 svg.rect(g, x, y, boxWidth, boxHeight,  {fill: 'white', stroke: 'lightGray'});
                 svg.text(g, x+20, y+16, 'prototype', {fill: 'black'});
