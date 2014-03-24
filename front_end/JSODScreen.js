@@ -440,10 +440,16 @@ WebInspector.JSODTab = function(name, value) {
                 y += boxHeight;
                 svg.rect(g, x, y, boxWidth, boxHeight,  {fill: 'white', stroke: 'gray'});
                 svg.text(g, x+7, y+16, 'o', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
-                svg.text(g, x+20, y+16, '__proto__', {fill: 'black'});
                 if (__proto____proto__Object) {
+                    svg.text(g, x+20, y+16, '__proto__', {fill: 'black'});
                     var ppr = svg.line(g, x+boxWidth, y+12, x+(boxWidth*2.375), y+12,  {stroke: 'black'});
                     svg.title(ppr, 'Hidden reference to prototype object.');
+                } else {
+                    svg.text(g, x+20, y+16, '__proto__', {fill: 'red'});
+                    svg.line(g, x+boxWidth, y+12, x+(boxWidth+(boxWidth/8)), y+12,  {stroke: 'black'});
+                    svg.line(g, x+(boxWidth+(boxWidth/8)), y+3, x+(boxWidth+(boxWidth/8)), y+21,  {stroke: 'black'});
+                    svg.line(g, x+(boxWidth+(boxWidth/8))+3, y+6, x+(boxWidth+(boxWidth/8))+3, y+18,  {stroke: 'black'});
+                    svg.line(g, x+(boxWidth+(boxWidth/8))+6, y+9, x+(boxWidth+(boxWidth/8))+6, y+15,  {stroke: 'black'});
                 }
 
                 if (hasConstructorAsOwnProperty) {
