@@ -276,7 +276,7 @@ WebInspector.JSODTab = function(name, value) {
 
             var g = svg.group(gr, 'g', {fontFamily: 'Courier', fontSize: '12'});
 
-            function doDrawJavascriptObjectProperties(x, y, properties, internalProperties) {
+            function doDrawJavascriptObjectProperties(x, y, borderColor, properties, internalProperties) {
                 var props = [];
                 var tooltip;
 
@@ -329,7 +329,7 @@ WebInspector.JSODTab = function(name, value) {
                     } else {
                         text = text.substring(0, text.indexOf(' : '));
                     }
-                    var rect = svg.rect(g, x, y, boxWidth, boxHeight,  {fill: 'white', stroke: 'black', strokeWidth: '1'});
+                    var rect = svg.rect(g, x, y, boxWidth, boxHeight,  {fill: 'white', stroke: borderColor, strokeWidth: '1'});
                     svg.title(rect, tooltip);
                     svg.text(g, x+20, y+16, text, {fill: 'black'});
 
@@ -393,7 +393,7 @@ WebInspector.JSODTab = function(name, value) {
                         }
                     }
 
-                    doDrawJavascriptObjectProperties(x, y, properties, internalProperties);
+                    doDrawJavascriptObjectProperties(x, y, 'black', properties, internalProperties);
                 }
 
                 if (!hasConstructorAsOwnProperty  && !__proto__Object ) {
@@ -443,10 +443,10 @@ WebInspector.JSODTab = function(name, value) {
                 }
 
                 if (hasConstructorAsOwnProperty) {
-                    doDrawJavascriptObjectProperties(x, y, properties, internalProperties);
+                    doDrawJavascriptObjectProperties(x, y, 'gray', properties, internalProperties);
                 } else {
                     function get__proto__Properties(x, y, properties, internalProperties) {
-                        doDrawJavascriptObjectProperties(x, y, properties, internalProperties);
+                        doDrawJavascriptObjectProperties(x, y, 'gray', properties, internalProperties);
                     }
                     WebInspector.RemoteObject.loadFromObjectPerProto(__proto__Object, get__proto__Properties.bind(this, x, y));
                 }
@@ -480,7 +480,7 @@ WebInspector.JSODTab = function(name, value) {
                 // svg.text(g, x+20, y+16, '__proto__', {fill: 'black'});
 
                 function getConstructorObjectProperties(x, y, properties, internalProperties) {
-                    doDrawJavascriptObjectProperties(x, y, properties, internalProperties);
+                    doDrawJavascriptObjectProperties(x, y, 'lightGray', properties, internalProperties);
                 }
                 WebInspector.RemoteObject.loadFromObjectPerProto(constructorObject, getConstructorObjectProperties.bind(this, x, y));
             }
