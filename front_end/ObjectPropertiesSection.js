@@ -272,9 +272,9 @@ WebInspector.ObjectPropertyTreeElement.prototype = {
     {
         var contextMenu = new WebInspector.ContextMenu(event);
         this.populateContextMenu(contextMenu);
-        // This is a simple value
         if (!value.value) {
-            contextMenu.appendItem(WebInspector.UIString(WebInspector.useLowerCaseMenuTitles() ? "JavaScript Object Diagram" : "JavaScript object Diagram"), this._jsod.bind(this, name, value));
+            // This is not a simple value - only then a diagram makes sense
+            contextMenu.appendItem(WebInspector.UIString(WebInspector.useLowerCaseMenuTitles() ? "JavaScriptobject diagram" : "JavaScript Object Diagram"), this._jsod.bind(this, name, value));
         }
         contextMenu.appendApplicableItems(value);
         contextMenu.show();
