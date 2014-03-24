@@ -271,7 +271,11 @@ WebInspector.JSODTab = function(name, value) {
 
         function drawJavascriptObject(svg, gr, label, value, ox, oy, boxWidth, boxHeight) {
             function functionName(functionString) {
-                return /^function\s*([_$a-zA-Z\xA0-\uFFFF][_$a-zA-Z0-9\xA0-\uFFFF]*)\s*/.exec('' + functionString)[1] || functionString.substring(9, 39);
+                try {
+                    return /^function\s*(([_$a-zA-Z\xA0-\uFFFF][_$a-zA-Z0-9\xA0-\uFFFF]*)?\([^)]*\))\s*/.exec('' + functionString)[1];
+                } catch(e) {
+                    return functionString.substring(9, 39);
+                }
             }
 
             var g = svg.group(gr, 'g', {fontFamily: 'Courier', fontSize: '12'});
@@ -379,7 +383,7 @@ WebInspector.JSODTab = function(name, value) {
                         svg.text(g, x+5, y+16, 'fx', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
                         svg.text(g, x+20, y+16, 'constructor : ' + (value.constructor.name || ''), {fill: 'lightGray'});
                         if (constructorObject) {
-                            var cfr = svg.line(g, x+boxWidth, y+12, x+(3*boxWidth), y+12,  {stroke: 'lightGray', markerEnd: 'url(#arrow)'});
+                            var cfr = svg.line(g, x+boxWidth, y+12, x+(3*boxWidth), y+12,  {stroke: 'black', markerEnd: 'url(#arrow)'});
                             svg.title(cfr, 'Inherited constructor property - reference to Constructor function.');
                         }
 
