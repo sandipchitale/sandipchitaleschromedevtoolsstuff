@@ -259,6 +259,27 @@ WebInspector.JSODTab = function(name, value) {
         line(10, 6).line(2,2).close(), {fill: '#000000'});
         var g = svg.group({fontFamily: 'Courier', fontSize: '12'});
 
+        var dragging = false;
+        var dragStartX = 0;
+        var dragStartY = 0;
+        $(svg.root()).on('mousedown', function(e) {
+            dragging = true;
+            dragStartX = e.clientX;
+            dragStartY = e.clientY;
+            console.dir(arguments);
+            svg.root().classList.add('JSOD-dragging');
+        });
+        $(svg.root()).on('mouseup', function(e) {
+            if (dragging) {
+                svg.root().classList.remove('JSOD-dragging');
+                pan(e.clientX - dragStartX, e.clientY - dragStartY);
+                dragStartX = 0;
+                dragStartY = 0;
+            }
+            dragging = false;
+            console.dir(arguments);
+        });
+
         function drawGraph(svg, gr, name, value) {
             if (value) {
                 var boxWidth = 320;

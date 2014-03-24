@@ -18,3 +18,7 @@
 .JSOD-range {
 	vertical-align: middle;
 }
+
+.JSOD-dragging {
+	cursor: move;
+}
