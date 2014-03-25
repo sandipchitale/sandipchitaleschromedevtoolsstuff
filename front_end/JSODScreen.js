@@ -354,6 +354,9 @@ WebInspector.JSODTab = function(name, value) {
                 try {
                     if (e && e.data) {
                         clear();
+                        if (e.data.wasThrown) {
+                            expressionInput.classList.add('JSOD-error');
+                        }
                         drawGraph(svg, g, expressionInput.value, e.data.result);
                     }
                 } finally {
@@ -368,10 +371,13 @@ WebInspector.JSODTab = function(name, value) {
         $(evaluateExpression).on('click', evaluate);
 
         function evaluateOnEnter(e) {
+            expressionInput.classList.remove('JSOD-error');
             if (e.keyCode === 13) {
                 noop(e);
                 evaluate();
+                return;
             }
+
         }
 
         function noop(e) {
