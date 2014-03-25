@@ -280,7 +280,6 @@ WebInspector.JSODTab = function(name, value) {
             dragging = true;
             dragStartX = e.clientX;
             dragStartY = e.clientY;
-            console.dir(arguments);
             svg.root().classList.add('JSOD-dragging');
         });
         $(svg.root()).on('mouseup', function(e) {
@@ -291,7 +290,16 @@ WebInspector.JSODTab = function(name, value) {
                 dragStartY = 0;
             }
             dragging = false;
-            console.dir(arguments);
+        });
+
+        $(svg.root()).on('mousewheel', function(e) {
+            if (e.originalEvent.wheelDelta > 0) {
+                zoomOut();
+                e.stopPropogation();
+            } else if (e.originalEvent.wheelDelta < 0) {
+                zoomIn();
+                e.stopPropogation();
+            }
         });
 
         function drawGraph(svg, gr, name, value) {
