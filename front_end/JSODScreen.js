@@ -302,13 +302,14 @@ WebInspector.JSODTab = function(name, value) {
         });
 
         $(svg.root()).on('mousewheel', function(e) {
+            var delta = 50;
             if (e.originalEvent.wheelDeltaX === 0) {
                 if (e.originalEvent.wheelDeltaY > 0) {
                     if (e.ctrlKey) {
                         zoomIn();
                         e.preventDefault();
                     } else {
-                        panSouth();
+                        pan(0, -delta);
                     }
                     e.stopPropagation();
                 } else if (e.originalEvent.wheelDeltaY < 0) {
@@ -316,16 +317,16 @@ WebInspector.JSODTab = function(name, value) {
                         zoomOut();
                         e.preventDefault();
                     } else {
-                        panNorth();
+                        pan(0, delta);
                     }
                     e.stopPropagation();
                 }
             } else {
                 if (e.originalEvent.wheelDeltaX > 0) {
-                    panEast();
+                    pan(-delta, 0);
                     e.stopPropagation();
                 } else if (e.originalEvent.wheelDeltaX < 0) {
-                    panWest();
+                    pan(delta, 0);
                     e.stopPropagation();
                 }
             }
