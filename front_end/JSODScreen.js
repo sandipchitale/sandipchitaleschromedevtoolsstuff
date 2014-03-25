@@ -117,6 +117,8 @@ WebInspector.JSODTab = function(name, value) {
     var panNorthButton = tr1td5.createChild("button");panNorthButton.classList.add('JSOD-button');panNorthButton.createTextChild('\u25B2');
     var tr1td6 = tr1.createChild("td");
     var panNorthEastButton = tr1td6.createChild("button");panNorthEastButton.classList.add('JSOD-button');panNorthEastButton.createTextChild('\u25E5');
+    tr1.createChild("td");
+    tr1.createChild("td");
 
     var tr2 = table.createChild("tr");
     var tr2td1 = tr2.createChild("td");
@@ -131,6 +133,11 @@ WebInspector.JSODTab = function(name, value) {
     var homeButton = tr2td5.createChild("button");homeButton.classList.add('JSOD-button');homeButton.createTextChild('\u25A3');
     var tr2td6 = tr2.createChild("td");
     var panEastButton = tr2td6.createChild("button");panEastButton.classList.add('JSOD-button');panEastButton.createTextChild('\u25B6');
+    var tr2td_1 = tr2.createChild("td");
+    var expressionInput = tr2td_1.createChild("input");
+    expressionInput.setAttribute('type', 'input');
+    var tr2td_0 = tr2.createChild("td");
+    var evaluateExpression = tr2td_0.createChild("button");evaluateExpression.classList.add('JSOD-button');evaluateExpression.createTextChild('=');
 
     var tr3 = table.createChild("tr");
     tr3.createChild("td");
@@ -142,6 +149,8 @@ WebInspector.JSODTab = function(name, value) {
     var panSouthButton = tr3td5.createChild("button");panSouthButton.classList.add('JSOD-button');panSouthButton.createTextChild('\u25BC');
     var tr3td6 = tr3.createChild("td");
     var panSouthEastButton = tr3td6.createChild("button");panSouthEastButton.classList.add('JSOD-button');panSouthEastButton.createTextChild('\u25E2');
+    tr3.createChild("td");
+    tr3.createChild("td");
 
     this.element.createChild("hr")
 
@@ -331,6 +340,45 @@ WebInspector.JSODTab = function(name, value) {
                 drawJavascriptObject(svg, gr, name, value, x, y, boxWidth, boxHeight);
             }
         }
+
+        function clear() {
+            if (g) {
+                while (g.firstChild) {
+                    g.removeChild(g.firstChild);
+                }
+            }
+        }
+        function evaluate() {
+            function expressionEvaluated(e) {
+                try {
+                    if (e && e.data) {
+                        clear();
+                        drawGraph(svg, g, expressionInput.value, e.data.result);
+                    }
+                } finally {
+                    WebInspector.console.removeEventListener(WebInspector.ConsoleModel.Events.CommandEvaluated, expressionEvaluated, this);
+                }
+            }
+            if (expressionInput.value) {
+                WebInspector.console.addEventListener(WebInspector.ConsoleModel.Events.CommandEvaluated, expressionEvaluated, this);
+                WebInspector.console.evaluateCommand(expressionInput.value, true);
+            }
+        }
+        $(evaluateExpression).on('click', evaluate);
+
+        function evaluateOnEnter(e) {
+            if (e.keyCode === 13) {
+                noop(e);
+                evaluate();
+            }
+        }
+
+        function noop(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        $(expressionInput).on('keydown', evaluateOnEnter);
 
         function drawJavascriptObject(svg, gr, label, value, ox, oy, boxWidth, boxHeight) {
             var g = svg.group(gr, 'g', {fontFamily: 'Courier', fontSize: '12'});
