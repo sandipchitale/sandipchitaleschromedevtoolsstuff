@@ -1,6 +1,6 @@
 .JSOD {
 	border: 1px solid gray;
-	overflow: auto;
+	overflow: hidden;
 }
 
 .JSOD-toolbar {
