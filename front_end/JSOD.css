@@ -22,3 +22,7 @@
 .JSOD-dragging {
 	cursor: move;
 }
+
+.JSOD-home-clicked {
+	color: red;
+}

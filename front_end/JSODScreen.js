@@ -216,10 +216,24 @@ WebInspector.JSODTab = function(name, value) {
             pan(-100, 0);
         }
 
+        var homeClicked = false;
         var home = function() {
             ox = 0;
             oy = 0;
-            panzoom();
+            if (homeClicked) {
+                homeClicked = false;
+                homeButton.classList.remove('JSOD-home-clicked');
+                zoomRange.value = 0;
+                zoomTo();
+            } else {
+                panzoom();
+                homeClicked = true;
+                homeButton.classList.add('JSOD-home-clicked');
+                setTimeout(function() {
+                    homeClicked = false;
+                    homeButton.classList.remove('JSOD-home-clicked');
+                }, 1000);
+            }
         }
 
         var panEast = function() {
