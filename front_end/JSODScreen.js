@@ -293,12 +293,32 @@ WebInspector.JSODTab = function(name, value) {
         });
 
         $(svg.root()).on('mousewheel', function(e) {
-            if (e.originalEvent.wheelDelta > 0) {
-                zoomOut();
-                e.stopPropogation();
-            } else if (e.originalEvent.wheelDelta < 0) {
-                zoomIn();
-                e.stopPropogation();
+            if (e.originalEvent.wheelDeltaX === 0) {
+                if (e.originalEvent.wheelDeltaY > 0) {
+                    if (e.ctrlKey) {
+                        zoomIn();
+                        e.preventDefault();
+                    } else {
+                        panSouth();
+                    }
+                    e.stopPropagation();
+                } else if (e.originalEvent.wheelDeltaY < 0) {
+                    if (e.ctrlKey) {
+                        zoomOut();
+                        e.preventDefault();
+                    } else {
+                        panNorth();
+                    }
+                    e.stopPropagation();
+                }
+            } else {
+                if (e.originalEvent.wheelDeltaX > 0) {
+                    panEast();
+                    e.stopPropagation();
+                } else if (e.originalEvent.wheelDeltaX < 0) {
+                    panWest();
+                    e.stopPropagation();
+                }
             }
         });
 
