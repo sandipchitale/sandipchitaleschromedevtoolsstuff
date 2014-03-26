@@ -138,12 +138,14 @@ WebInspector.JSODTab = function(name, value) {
     var tr2td9 = tr2.createChild("td");
     var resultValue = tr2td9.createChild("input");
     resultValue.setAttribute('type', 'text');
-    resultValue.setAttribute('size', '40');
+    resultValue.setAttribute('size', '20');
     resultValue.setAttribute('readonly', 'true');
 
     var tr3 = table.createChild("tr");
     tr3.createChild("td");
-    tr3.createChild("td");
+    var tr3d2 = tr3.createChild("td");
+    var zoomPercent = tr3d2.createChild("span");
+    zoomPercent.textContent = '100%';
     tr3.createChild("td");
     var tr3td4 = tr3.createChild("td");
     var panSouthWestButton = tr3td4.createChild("button");panSouthWestButton.classList.add('JSOD-button');panSouthWestButton.createTextChild('\u25E3');
@@ -176,6 +178,7 @@ WebInspector.JSODTab = function(name, value) {
 
         var zoomPercents = [0.25, 0.50, 0.75, 1.00, 1.25, 1.5, 2.00];
         var zoom = function(level) {
+            zoomPercent.textContent = '' + (zoomPercents[parseInt(level)+3] * 100) + '%';
             zoomlevel = zoomPercents[parseInt(level)+3];
             panzoom();
         }
