@@ -36,17 +36,13 @@
 WebInspector.JSODScreen = function(onHide, name, value)
 {
     WebInspector.HelpScreen.call(this);
-    this.element.id = "settings-screen";
+    this.element.id = "JSOD-screen";
 
     /** @type {function()} */
     this._onHide = onHide;
 
     this._tabbedPane = new WebInspector.TabbedPane();
     this._tabbedPane.element.classList.add("help-window-main");
-    var jsodLabelElement = document.createElement("div");
-    jsodLabelElement.className = "help-window-label";
-    jsodLabelElement.createTextChild("Diagram");
-    this._tabbedPane.element.insertBefore(jsodLabelElement, this._tabbedPane.element.firstChild);
     this._tabbedPane.element.appendChild(this._createCloseButton());
 
     WebInspector.JSODScreen.Tabs.JSOD = '';
