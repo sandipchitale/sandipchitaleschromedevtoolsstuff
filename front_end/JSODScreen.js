@@ -49,7 +49,7 @@ WebInspector.JSODScreen = function(onHide, name, value)
     this._tabbedPane.element.insertBefore(jsodLabelElement, this._tabbedPane.element.firstChild);
     this._tabbedPane.element.appendChild(this._createCloseButton());
 
-    WebInspector.JSODScreen.Tabs.JSOD = name;
+    WebInspector.JSODScreen.Tabs.JSOD = '';
     var jsodTab = new WebInspector.JSODTab(name, value);
     this._tabbedPane.appendTab(WebInspector.JSODScreen.Tabs.JSOD, WebInspector.JSODScreen.Tabs.JSOD, jsodTab);
     this._tabbedPane.selectTab(jsodTab.id);
