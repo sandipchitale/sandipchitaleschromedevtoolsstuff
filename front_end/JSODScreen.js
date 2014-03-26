@@ -119,6 +119,7 @@ WebInspector.JSODTab = function(name, value) {
     var panNorthEastButton = tr1td6.createChild("button");panNorthEastButton.classList.add('JSOD-button');panNorthEastButton.createTextChild('\u25E5');
     tr1.createChild("td");
     tr1.createChild("td");
+    tr1.createChild("td");
 
     var tr2 = table.createChild("tr");
     var tr2td1 = tr2.createChild("td");
@@ -133,11 +134,16 @@ WebInspector.JSODTab = function(name, value) {
     var homeButton = tr2td5.createChild("button");homeButton.classList.add('JSOD-button');homeButton.createTextChild('\u25A3');
     var tr2td6 = tr2.createChild("td");
     var panEastButton = tr2td6.createChild("button");panEastButton.classList.add('JSOD-button');panEastButton.createTextChild('\u25B6');
-    var tr2td_1 = tr2.createChild("td");
-    var expressionInput = tr2td_1.createChild("input");
-    expressionInput.setAttribute('type', 'input');
-    var tr2td_0 = tr2.createChild("td");
-    var evaluateExpression = tr2td_0.createChild("button");evaluateExpression.classList.add('JSOD-button');evaluateExpression.createTextChild('=');
+    var tr2td7 = tr2.createChild("td");
+    var expressionInput = tr2td7.createChild("input");
+    expressionInput.setAttribute('type', 'text');
+    var tr2td8 = tr2.createChild("td");
+    var evaluateExpression = tr2td8.createChild("button");evaluateExpression.classList.add('JSOD-button');evaluateExpression.createTextChild('=');
+    var tr2td9 = tr2.createChild("td");
+    var resultValue = tr2td9.createChild("input");
+    resultValue.setAttribute('type', 'text');
+    resultValue.setAttribute('size', '40');
+    resultValue.setAttribute('readonly', 'true');
 
     var tr3 = table.createChild("tr");
     tr3.createChild("td");
@@ -149,6 +155,7 @@ WebInspector.JSODTab = function(name, value) {
     var panSouthButton = tr3td5.createChild("button");panSouthButton.classList.add('JSOD-button');panSouthButton.createTextChild('\u25BC');
     var tr3td6 = tr3.createChild("td");
     var panSouthEastButton = tr3td6.createChild("button");panSouthEastButton.classList.add('JSOD-button');panSouthEastButton.createTextChild('\u25E2');
+    tr3.createChild("td");
     tr3.createChild("td");
     tr3.createChild("td");
 
@@ -357,7 +364,11 @@ WebInspector.JSODTab = function(name, value) {
                         if (e.data.wasThrown) {
                             expressionInput.classList.add('JSOD-error');
                         }
-                        drawGraph(svg, g, expressionInput.value, e.data.result);
+                        if (e.data.result.type === 'object' || e.data.result.type === 'function') {
+                            drawGraph(svg, g, expressionInput.value, e.data.result);
+                        } else {
+                            resultValue.value = '' + e.data.result.value;
+                        }
                     }
                 } finally {
                     WebInspector.console.removeEventListener(WebInspector.ConsoleModel.Events.CommandEvaluated, expressionEvaluated, this);
@@ -372,6 +383,7 @@ WebInspector.JSODTab = function(name, value) {
 
         function evaluateOnEnter(e) {
             expressionInput.classList.remove('JSOD-error');
+            resultValue.value = '';
             if (e.keyCode === 13) {
                 noop(e);
                 evaluate();
@@ -674,7 +686,12 @@ WebInspector.JSODTab = function(name, value) {
 
             WebInspector.RemoteObject.loadFromObjectPerProto(value, callback.bind(this, ox, oy, value));
         }
-        drawGraph(svg, g, name, value);
+        expressionInput.value = name;
+        if (value.type === 'object' || value.type === 'function') {
+            drawGraph(svg, g, name, value);
+        } else {
+            resultValue.value = '' + value.value;
+        }
     });
 }
 
