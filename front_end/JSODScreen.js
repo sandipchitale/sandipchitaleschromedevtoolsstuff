@@ -457,7 +457,7 @@ WebInspector.JSODTab = function(name, value) {
                     tooltip = text;
                     if (type === 'F' || type == 'O' || type === 'A' || type === 'N') {
                     } else {
-                        text = text.substring(0, text.indexOf(' : '));
+                        text = text.substring(0, text.indexOf(' : ') + 30);
                     }
                     var rect = svg.rect(g, x, y, boxWidth, boxHeight,  {fill: 'white', stroke: borderColor, strokeWidth: '1'});
                     svg.title(rect, tooltip);
