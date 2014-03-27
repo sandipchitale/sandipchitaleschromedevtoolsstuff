@@ -108,7 +108,7 @@ WebInspector.JSODTab = function(name, value) {
     tr1.createChild("td");
     tr1.createChild("td");
     var tr1td4 = tr1.createChild("td");
-    var panNorthWestButton = tr1td4.createChild("button");panNorthWestButton.classList.add('JSOD-button');panNorthWestButton.createTextChild('\u25E4    ');
+    var panNorthWestButton = tr1td4.createChild("button");panNorthWestButton.classList.add('JSOD-button');panNorthWestButton.createTextChild('\u25E4');
     var tr1td5 = tr1.createChild("td");
     var panNorthButton = tr1td5.createChild("button");panNorthButton.classList.add('JSOD-button');panNorthButton.createTextChild('\u25B2');
     var tr1td6 = tr1.createChild("td");
@@ -355,6 +355,14 @@ WebInspector.JSODTab = function(name, value) {
                 }
             }
         }
+
+        var loadProperty = function(propertyLabel, propetyValue, e) {
+            e.stopPropagation();
+            e.preventDefault();
+            expressionInput.value = '';
+            drawGraph(svg, g, propertyLabel, propetyValue);
+        }
+
         function evaluate() {
             function expressionEvaluated(e) {
                 try {
@@ -413,6 +421,9 @@ WebInspector.JSODTab = function(name, value) {
                 var props = [];
                 var tooltip;
 
+                function compareText(a, b) {
+                    return a.text.localeCompare(b.text);
+                }
                 for(var prop = 0; prop < properties.length; prop++) {
                     var propName = properties[prop].name;
                     var propValue = properties[prop].value;
@@ -425,17 +436,17 @@ WebInspector.JSODTab = function(name, value) {
                         if (propValue.type === 'function') {
                             continue;
                         } else if (propValue.type === 'object') {
-                            props.push(propName + 'O');
+                            props.push({text:propName + 'O', value: propValue});
                         } else if (propValue.type === 'number') {
-                            props.push(propName + ' : ' + propValue.value + '#');
+                            props.push({text:propName + ' : ' + propValue.value + '#', value: propValue});
                         } else if (propValue.type === 'string') {
-                            props.push(propName + ' : \'' + propValue.value.substring(0,36) + '\'S');
+                            props.push({text:propName + ' : \'' + propValue.value.substring(0,36) + '\'S', value: propValue});
                         } else {
-                            props.push(propName + ' : ' + propValue.value + (propValue.type === 'boolean' ? 'B' : '-'));
+                            props.push({text:propName + ' : ' + propValue.value + (propValue.type === 'boolean' ? 'B' : '-'), value: propValue});
                         }
                     }
                 }
-                props.sort();
+                props.sort(compareText);
 
                 var funcs = [];
                 for(var prop = 0; prop < properties.length; prop++) {
@@ -444,21 +455,23 @@ WebInspector.JSODTab = function(name, value) {
 
                     if (propValue) {
                         if (propValue.type == "function") {
-                            funcs.push(propName + '()F');
+                            funcs.push({text:propName + '()F', value: propValue});
                         }
                     }
                 }
-                funcs.sort();
+                funcs.sort(compareText);
 
                 props = props.concat(funcs);
 
                 for(var i = 0; i < props.length; i++) {
                     y += boxHeight;
-                    var text = props[i];
+                    var text = props[i].text;
                     var type = text.substring(text.length - 1);
                     text = text.substring(0, text.length - 1);
+                    var propertyLabel = text;
+                    var propetyValue = props[i].value;
                     tooltip = text;
-                    if (type === 'F' || type == 'O' || type === 'A' || type === 'N') {
+                    if (type == 'O' || type === 'A' || type === 'F' || type === 'N') {
                     } else {
                         text = text.substring(0, text.indexOf(' : ') + 30);
                     }
@@ -481,6 +494,10 @@ WebInspector.JSODTab = function(name, value) {
                     } else if (type === '-') {
                         svg.text(g, x+6, y+15, '-', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
                     } else if (type === 'N') {
+                    }
+                    if (type === 'O' || type === 'A' || type === 'F') {
+                        var loadButton = svg.rect(g, x+boxWidth-20, y+(boxHeight/2)-8, 16, 16, {fill: 'WhiteSmoke', stroke: 'lightgray', strokeWidth: '1'});
+                        $(loadButton).on('click', loadProperty.bind(this, propertyLabel, propetyValue));
                     }
                 }
             }
