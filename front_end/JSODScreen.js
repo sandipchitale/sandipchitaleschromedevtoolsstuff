@@ -360,6 +360,7 @@ WebInspector.JSODTab = function(name, value) {
             e.stopPropagation();
             e.preventDefault();
             expressionInput.value = '';
+            clear();
             drawGraph(svg, g, propertyLabel, propetyValue);
         }
 
