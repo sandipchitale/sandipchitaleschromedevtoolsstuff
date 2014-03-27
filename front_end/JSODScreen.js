@@ -498,8 +498,8 @@ WebInspector.JSODTab = function(name, value) {
                     }
                     if (type === 'O' || type === 'A' || type === 'F') {
                         var loadButton = svg.rect(g, x+boxWidth-20, y+(boxHeight/2)-8, 16, 16, {fill: 'WhiteSmoke', stroke: 'lightgray', strokeWidth: '1'});
-                        var loadButtonText = svg.text(g, x+boxWidth-15, y+(boxHeight/2)+4, '=',{fill: 'WhiteSmoke', stroke: 'lightgray', strokeWidth: '1'});
                         $(loadButton).on('click', loadProperty.bind(this, propertyLabel, propetyValue));
+                        var loadButtonText = svg.text(g, x+boxWidth-15, y+(boxHeight/2)+4, '=',{stroke: 'lightgray', strokeWidth: '1'});
                         $(loadButtonText).on('click', loadProperty.bind(this, propertyLabel, propetyValue));
                     }
                 }
