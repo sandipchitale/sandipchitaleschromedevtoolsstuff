@@ -532,8 +532,12 @@ WebInspector.JSODTab = function(name, value) {
                         svg.text(g, x+5, y+16, 'fx', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
                         svg.text(g, x+20, y+16, 'constructor : ' + (value.constructor.name || ''), {fill: 'lightGray'});
                         if (constructorObject) {
-                            var cfr = svg.line(g, x+boxWidth, y+12, x+(3*boxWidth), y+12,  {stroke: 'black', markerEnd: 'url(#arrow)'});
-                            svg.title(cfr, 'Inherited constructor property - reference to Constructor function.');
+                            var cfr1 = svg.line(g, x+boxWidth, y+12, x+boxWidth+(boxWidth/8), y+12,  {stroke: 'black'});
+                            svg.title(cfr1, 'Reference to Constructor function via inherited constructor property.');
+                            var cfr2 = svg.line(g, x+boxWidth+(boxWidth/8), y+12, x+boxWidth+(boxWidth/8), y+12+(2*boxHeight), {stroke: 'black'});
+                            svg.title(cfr2, 'Reference to Constructor function via inherited constructor property.');
+                            var cfr3 = svg.line(g, x+boxWidth+(boxWidth/8), y+12+(2*boxHeight), x+(2*boxWidth), y+12+(2*boxHeight),  {stroke: 'black'});
+                            svg.title(cfr3, 'Reference to Constructor function via inherited constructor property.');
                         }
 
                         y += boxHeight;
