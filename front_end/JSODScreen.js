@@ -536,7 +536,7 @@ WebInspector.JSODTab = function(name, value) {
                             svg.title(cfr1, 'Reference to Constructor function via inherited constructor property.');
                             var cfr2 = svg.line(g, x+boxWidth+(boxWidth/8), y+12, x+boxWidth+(boxWidth/8), y+12+(2*boxHeight), {stroke: 'black'});
                             svg.title(cfr2, 'Reference to Constructor function via inherited constructor property.');
-                            var cfr3 = svg.line(g, x+boxWidth+(boxWidth/8), y+12+(2*boxHeight), x+(2*boxWidth), y+12+(2*boxHeight),  {stroke: 'black'});
+                            var cfr3 = svg.line(g, x+boxWidth+(boxWidth/8), y+12+(2*boxHeight), x+boxWidth+(boxWidth/4), y+12+(2*boxHeight),  {stroke: 'black'});
                             svg.title(cfr3, 'Reference to Constructor function via inherited constructor property.');
                         }
 
@@ -595,7 +595,7 @@ WebInspector.JSODTab = function(name, value) {
                 svg.text(g, x+7, y+16, 'o', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
                 if (__proto____proto__Object) {
                     svg.text(g, x+20, y+16, '__proto__', {fill: 'black'});
-                    var ppr = svg.line(g, x+boxWidth, y+12, x+(boxWidth*2.375), y+12,  {stroke: 'black'});
+                    var ppr = svg.line(g, x+boxWidth, y+12, x+(boxWidth*1.25), y+12,  {stroke: 'black'});
                     svg.title(ppr, 'Hidden reference to prototype object.');
                 } else {
                     svg.text(g, x+20, y+16, '__proto__', {fill: 'red'});
