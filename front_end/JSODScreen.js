@@ -517,27 +517,27 @@ WebInspector.JSODTab = function(name, value) {
 
                     if (value.type === "object" && value.subtype == "array") {
                         svg.text(g, x+5, y+16, '[]', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
-                        svg.text(g, x+20, y+16, label + ' : ' + value.description, {fill: 'black'});
+                        svg.text(g, x+20, y+16, label + ' : ' + value.description, {fill: 'black', fontWeight: 'bold'});
                     } else if (value.type === "function") {
                         svg.text(g, x+5, y+16, 'fx', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
-                        svg.text(g, x+20, y+16, label + ' : ' + functionName(value.description), {fill: 'black'});
+                        svg.text(g, x+20, y+16, label + ' : ' + functionName(value.description), {fill: 'black', fontWeight: 'bold'});
                     } else {
                         svg.text(g, x+7, y+16, 'o', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
-                        svg.text(g, x+20, y+16, label + ' : ' + value.description, {fill: 'black'});
+                        svg.text(g, x+20, y+16, label + ' : ' + value.description, {fill: 'black', fontWeight: 'bold'});
                     }
 
                     if (__proto__Object) {
                         y += boxHeight;
-                        svg.rect(g, x, y, boxWidth, boxHeight,  {fill: 'white', stroke: 'gray', fill: 'ivory'});
+                        svg.rect(g, x, y, boxWidth, boxHeight,  {fill: 'WhiteSmoke', stroke: 'black'});
                         svg.text(g, x+5, y+16, 'fx', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
                         svg.text(g, x+20, y+16, 'constructor : ' + (value.constructor.name || ''), {fill: 'lightGray'});
                         if (constructorObject) {
-                            var cfr1 = svg.line(g, x+boxWidth, y+12, x+boxWidth+(boxWidth/8), y+12,  {stroke: 'black'});
+                            var cfr1 = svg.line(g, x+boxWidth, y+12, x+boxWidth+(boxWidth/4), y+12,  {stroke: 'lightGray'});
                             svg.title(cfr1, 'Reference to Constructor function via inherited constructor property.');
-                            var cfr2 = svg.line(g, x+boxWidth+(boxWidth/8), y+12, x+boxWidth+(boxWidth/8), y+12+(2*boxHeight), {stroke: 'black'});
-                            svg.title(cfr2, 'Reference to Constructor function via inherited constructor property.');
-                            var cfr3 = svg.line(g, x+boxWidth+(boxWidth/8), y+12+(2*boxHeight), x+boxWidth+(boxWidth/4), y+12+(2*boxHeight),  {stroke: 'black'});
-                            svg.title(cfr3, 'Reference to Constructor function via inherited constructor property.');
+                            // var cfr2 = svg.line(g, x+boxWidth+(boxWidth/8), y+12, x+boxWidth+(boxWidth/8), y+12+(2*boxHeight), {stroke: 'black'});
+                            // svg.title(cfr2, 'Reference to Constructor function via inherited constructor property.');
+                            // var cfr3 = svg.line(g, x+boxWidth+(boxWidth/8), y+12+(2*boxHeight), x+boxWidth+(boxWidth/4), y+12+(2*boxHeight),  {stroke: 'black'});
+                            // svg.title(cfr3, 'Reference to Constructor function via inherited constructor property.');
                         }
 
                         y += boxHeight;
@@ -573,23 +573,25 @@ WebInspector.JSODTab = function(name, value) {
                 svg.rect(g, x, y, boxWidth, boxHeight,  {fill: 'white', stroke: 'gray', strokeWidth: '1'});
                 svg.text(g, x+6, y+15, 'o', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
                 if (__proto____proto__Object && __proto____proto__Object.description) {
-                    svg.text(g, x+20, y+16, '{} : ' + __proto____proto__Object.description, {fill: 'black'});
+                    svg.text(g, x+20, y+16, '{} : ' + __proto____proto__Object.description, {fill: 'black', fontWeight: 'bold'});
                 } else {
-                    svg.text(g, x+20, y+16, '{} : ' + __proto__Object.description, {fill: 'black'});
+                    svg.text(g, x+20, y+16, '{} : ' + __proto__Object.description, {fill: 'black', fontWeight: 'bold'});
                 }
                 var c2pr = svg.line(g, x+(boxWidth+(boxWidth/4)), y+12, x+boxWidth, y+12, {stroke: 'black', markerEnd: 'url(#arrow)'});
                 svg.title(c2pr, 'Reference to prototype object from Constructor function.');
 
-                y += boxHeight;
+                y -= boxHeight;
                 svg.rect(g, x, y, boxWidth, boxHeight,  {fill: 'white', stroke: 'gray'});
                 svg.text(g, x+5, y+15, 'fx', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
                 svg.text(g, x+20, y+16, 'constructor', {fill: 'black'});
-                var p2cr = svg.line(g, x+boxWidth, y+12, x+(boxWidth+(boxWidth/8)), y+12,  {stroke: 'black'});
+                var p2cr = svg.line(g, x+boxWidth, y+12, x+(boxWidth+(boxWidth/4)), y+12,  {stroke: 'black', markerEnd: 'url(#arrow)'});
                 svg.title(p2cr, 'Reference to Constructor function.');
-                p2cr = svg.line(g, x+(boxWidth+(boxWidth/8)), y+12, x+(boxWidth+(boxWidth/8)), y-(boxHeight+(boxHeight/2)),  {stroke: 'black'});
-                svg.title(p2cr, 'Reference to Constructor function.');
-                p2cr = svg.line(g, x+(boxWidth+(boxWidth/8)), y-(boxHeight+(boxHeight/2)), x+(boxWidth+(boxWidth/4)), y-(boxHeight+(boxHeight/2)), {stroke: 'black', markerEnd: 'url(#arrow)'});
-                svg.title(p2cr, 'Reference to Constructor function.');
+                // p2cr = svg.line(g, x+(boxWidth+(boxWidth/8)), y+12, x+(boxWidth+(boxWidth/8)), y-(boxHeight+(boxHeight/2)),  {stroke: 'black'});
+                // svg.title(p2cr, 'Reference to Constructor function.');
+                // p2cr = svg.line(g, x+(boxWidth+(boxWidth/8)), y-(boxHeight+(boxHeight/2)), x+(boxWidth+(boxWidth/4)), y-(boxHeight+(boxHeight/2)), {stroke: 'black', markerEnd: 'url(#arrow)'});
+                // svg.title(p2cr, 'Reference to Constructor function.');
+
+                y += boxHeight;
                 y += boxHeight;
                 svg.rect(g, x, y, boxWidth, boxHeight,  {fill: 'white', stroke: 'gray'});
                 svg.text(g, x+7, y+16, 'o', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
@@ -623,16 +625,16 @@ WebInspector.JSODTab = function(name, value) {
                 }
 
                 // Constructor function
-                y += boxHeight;
-                y -= boxHeight;
-                svg.rect(g, x, y, boxWidth, boxHeight,  {fill: 'white', stroke: 'lightGray'});
-                svg.text(g, x+7, y+16, 'o', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
-                svg.text(g, x+20, y+16, '__proto__', {fill: 'lightGray'});
+                // y += boxHeight;
+                // y -= boxHeight;
+                // svg.rect(g, x, y, boxWidth, boxHeight,  {fill: 'white', stroke: 'lightGray'});
+                // svg.text(g, x+7, y+16, 'o', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
+                // svg.text(g, x+20, y+16, '__proto__', {fill: 'lightGray'});
 
                 y += boxHeight;
                 svg.rect(g, x, y, boxWidth, boxHeight,  {fill: 'white', stroke: 'lightGray'});
-                svg.text(g, x+5, y+16, 'fx', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
-                svg.text(g, x+20, y+16, 'function ' + functionName(constructorObject.description), {fill: 'black'});
+                svg.text(g, x+5, y+16, 'fx', {fill: 'white', fontSize: '9', fontWeight: 'bold'});
+                svg.text(g, x+20, y+16, 'function ' + functionName(constructorObject.description), {fill: 'black', fontWeight: 'bold'});
                 y += boxHeight;
                 svg.rect(g, x, y, boxWidth, boxHeight,  {fill: 'white', stroke: 'lightGray'});
                 svg.text(g, x+20, y+16, 'prototype', {fill: 'black'});
@@ -671,7 +673,7 @@ WebInspector.JSODTab = function(name, value) {
                     // __proto__Object is really the __proto____proto__Object for the next level, so also draw the next level
                     if (__proto__Object) {
                         ox += 800;
-                        oy += 96;
+                        oy += 72;
                         drawJavascriptObject(svg, gr, '{}', __proto__Object, ox, oy, boxWidth, boxHeight);
                     }
                     return;
@@ -696,7 +698,7 @@ WebInspector.JSODTab = function(name, value) {
                         } else {
                             ox += 1200;
                         }
-                        oy += 96;
+                        oy += 72;
                         drawJavascriptObject(svg, gr, '{}', __proto____proto__Object, ox, oy, boxWidth, boxHeight);
                     }
                 }
