@@ -513,7 +513,7 @@ WebInspector.JSODTab = function(name, value) {
                 if (!hasConstructorAsOwnProperty) {
 
                     svg.line(g, x-(boxWidth/4), y+12, x, y+12,  {stroke: 'black', markerEnd: 'url(#arrow)'});
-                    svg.rect(g, x, y, boxWidth, boxHeight,  {fill: 'white', stroke: 'black', strokeWidth: '1'});
+                    svg.rect(g, x, y, boxWidth, boxHeight,  {fill: 'white', stroke: 'black', strokeWidth: '2'});
 
                     if (value.type === "object" && value.subtype == "array") {
                         svg.text(g, x+5, y+16, '[]', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
@@ -534,10 +534,11 @@ WebInspector.JSODTab = function(name, value) {
                         if (constructorObject) {
                             var cfr1 = svg.line(g, x+boxWidth, y+12, x+boxWidth+(boxWidth/4), y+12,  {stroke: 'lightGray'});
                             svg.title(cfr1, 'Reference to Constructor function via inherited constructor property.');
-                            // var cfr2 = svg.line(g, x+boxWidth+(boxWidth/8), y+12, x+boxWidth+(boxWidth/8), y+12+(2*boxHeight), {stroke: 'black'});
-                            // svg.title(cfr2, 'Reference to Constructor function via inherited constructor property.');
-                            // var cfr3 = svg.line(g, x+boxWidth+(boxWidth/8), y+12+(2*boxHeight), x+boxWidth+(boxWidth/4), y+12+(2*boxHeight),  {stroke: 'black'});
-                            // svg.title(cfr3, 'Reference to Constructor function via inherited constructor property.');
+
+                            var loadButton = svg.rect(g, x+boxWidth-20, y+(boxHeight/2)-8, 16, 16, {fill: 'WhiteSmoke', stroke: 'lightgray', strokeWidth: '1'});
+                            $(loadButton).on('click', loadProperty.bind(this, 'constructor', constructorObject));
+                            var loadButtonText = svg.text(g, x+boxWidth-15, y+(boxHeight/2)+4, '=',{stroke: 'lightgray', strokeWidth: '1'});
+                            $(loadButtonText).on('click', loadProperty.bind(this, 'constructor', constructorObject));
                         }
 
                         y += boxHeight;
@@ -547,6 +548,10 @@ WebInspector.JSODTab = function(name, value) {
                         if (__proto__Object) {
                             var pr = svg.line(g, x+boxWidth, y+12, x+(boxWidth+(boxWidth/4)), y+12,  {stroke: 'black', markerEnd: 'url(#arrow)'});
                             svg.title(pr, 'Hidden reference to prototype object.');
+                            var loadButton = svg.rect(g, x+boxWidth-20, y+(boxHeight/2)-8, 16, 16, {fill: 'WhiteSmoke', stroke: 'lightgray', strokeWidth: '1'});
+                            $(loadButton).on('click', loadProperty.bind(this, '__proto__', __proto__Object));
+                            var loadButtonText = svg.text(g, x+boxWidth-15, y+(boxHeight/2)+4, '=',{stroke: 'lightgray', strokeWidth: '1'});
+                            $(loadButtonText).on('click', loadProperty.bind(this, '__proto__', __proto__Object));
                         }
                     }
 
@@ -570,7 +575,7 @@ WebInspector.JSODTab = function(name, value) {
                     var tp = svg.line(g, x-(boxWidth/4), y+12-(2*boxHeight), x-(boxWidth/8), y+12-(2*boxHeight), {stroke: 'black'});
                     var tp = svg.line(g, x-(boxWidth/8), y+12-(2*boxHeight), x, y+12,  {stroke: 'black', markerEnd: 'url(#arrow)'});
                 }
-                svg.rect(g, x, y, boxWidth, boxHeight,  {fill: 'white', stroke: 'gray', strokeWidth: '1'});
+                svg.rect(g, x, y, boxWidth, boxHeight,  {fill: 'white', stroke: 'gray', strokeWidth: '2'});
                 svg.text(g, x+6, y+15, 'o', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
                 if (__proto____proto__Object && __proto____proto__Object.description) {
                     svg.text(g, x+20, y+16, '{} : ' + __proto____proto__Object.description, {fill: 'black', fontWeight: 'bold'});
@@ -586,10 +591,11 @@ WebInspector.JSODTab = function(name, value) {
                 svg.text(g, x+20, y+16, 'constructor', {fill: 'black'});
                 var p2cr = svg.line(g, x+boxWidth, y+12, x+(boxWidth+(boxWidth/4)), y+12,  {stroke: 'black', markerEnd: 'url(#arrow)'});
                 svg.title(p2cr, 'Reference to Constructor function.');
-                // p2cr = svg.line(g, x+(boxWidth+(boxWidth/8)), y+12, x+(boxWidth+(boxWidth/8)), y-(boxHeight+(boxHeight/2)),  {stroke: 'black'});
-                // svg.title(p2cr, 'Reference to Constructor function.');
-                // p2cr = svg.line(g, x+(boxWidth+(boxWidth/8)), y-(boxHeight+(boxHeight/2)), x+(boxWidth+(boxWidth/4)), y-(boxHeight+(boxHeight/2)), {stroke: 'black', markerEnd: 'url(#arrow)'});
-                // svg.title(p2cr, 'Reference to Constructor function.');
+
+                var loadButton = svg.rect(g, x+boxWidth-20, y+(boxHeight/2)-8, 16, 16, {fill: 'WhiteSmoke', stroke: 'lightgray', strokeWidth: '1'});
+                $(loadButton).on('click', loadProperty.bind(this, 'constructor', constructorObject));
+                var loadButtonText = svg.text(g, x+boxWidth-15, y+(boxHeight/2)+4, '=',{stroke: 'lightgray', strokeWidth: '1'});
+                $(loadButtonText).on('click', loadProperty.bind(this, 'constructor', constructorObject));
 
                 y += boxHeight;
                 y += boxHeight;
@@ -599,6 +605,11 @@ WebInspector.JSODTab = function(name, value) {
                     svg.text(g, x+20, y+16, '__proto__', {fill: 'black'});
                     var ppr = svg.line(g, x+boxWidth, y+12, x+(boxWidth*1.25), y+12,  {stroke: 'black'});
                     svg.title(ppr, 'Hidden reference to prototype object.');
+
+                    var loadButton = svg.rect(g, x+boxWidth-20, y+(boxHeight/2)-8, 16, 16, {fill: 'WhiteSmoke', stroke: 'lightgray', strokeWidth: '1'});
+                    $(loadButton).on('click', loadProperty.bind(this, '__proto__', __proto____proto__Object));
+                    var loadButtonText = svg.text(g, x+boxWidth-15, y+(boxHeight/2)+4, '=',{stroke: 'lightgray', strokeWidth: '1'});
+                    $(loadButtonText).on('click', loadProperty.bind(this, '__proto__', __proto____proto__Object));
                 } else {
                     svg.text(g, x+20, y+16, '__proto__', {fill: 'red'});
                     svg.line(g, x+boxWidth, y+12, x+(boxWidth+(boxWidth/8)), y+12,  {stroke: 'black'});
@@ -624,25 +635,14 @@ WebInspector.JSODTab = function(name, value) {
                     y = oy;
                 }
 
-                // Constructor function
-                // y += boxHeight;
-                // y -= boxHeight;
-                // svg.rect(g, x, y, boxWidth, boxHeight,  {fill: 'white', stroke: 'lightGray'});
-                // svg.text(g, x+7, y+16, 'o', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
-                // svg.text(g, x+20, y+16, '__proto__', {fill: 'lightGray'});
-
                 y += boxHeight;
-                svg.rect(g, x, y, boxWidth, boxHeight,  {fill: 'white', stroke: 'lightGray'});
+                svg.rect(g, x, y, boxWidth, boxHeight,  {fill: 'white', stroke: 'lightGray', strokeWidth: '2'});
                 svg.text(g, x+5, y+16, 'fx', {fill: 'white', fontSize: '9', fontWeight: 'bold'});
                 svg.text(g, x+20, y+16, 'function ' + functionName(constructorObject.description), {fill: 'black', fontWeight: 'bold'});
                 y += boxHeight;
                 svg.rect(g, x, y, boxWidth, boxHeight,  {fill: 'white', stroke: 'lightGray'});
                 svg.text(g, x+20, y+16, 'prototype', {fill: 'black'});
                 svg.text(g, x+7, y+16, 'o', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
-                // y += boxHeight;
-                // svg.rect(g, x, y, boxWidth, boxHeight,  {fill: 'white', stroke: 'lightGray'});
-                // svg.text(g, x+7, y+16, 'o', {fill: 'black', fontSize: '9', fontWeight: 'bold'});
-                // svg.text(g, x+20, y+16, '__proto__', {fill: 'black'});
 
                 function getConstructorObjectProperties(x, y, properties, internalProperties) {
                     doDrawJavascriptObjectProperties(x, y, 'lightGray', properties, internalProperties);
